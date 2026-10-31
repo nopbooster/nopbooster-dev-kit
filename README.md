@@ -7,6 +7,7 @@
   <img alt="nopCommerce 4.70 | 4.80 | 4.90" src="https://img.shields.io/badge/nopCommerce-4.70%20%7C%204.80%20%7C%204.90-1975B4">
   <img alt=".NET 8 | 9" src="https://img.shields.io/badge/.NET-8%20%7C%209-512BD4">
   <img alt="Claude plugin" src="https://img.shields.io/badge/Claude-plugin-D97757">
+  <a href="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml"><img alt="Checks" src="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml/badge.svg"></a>
 </p>
 
 <p align="center">
