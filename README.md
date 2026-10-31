@@ -296,4 +296,4 @@ The Dev Kit is made by **[NopBooster](https://www.nopbooster.com)**, part of Cre
 
 [MIT](LICENSE) © Creatrix Technologies (NopBooster).
 
-nopCommerce is a trademark of Nop Solutions, Ltd. Claude is a trademark of Anthropic, PBC. This project is independent and not affiliated with or endorsed by either.
+nopCommerce is a trademark of MazSoft LLC, the owner of the nopCommerce website and services. Claude is a trademark of Anthropic, PBC. This project is independent and not affiliated with or endorsed by either.
