@@ -1,6 +1,6 @@
 ---
 name: nop-new-plugin
-description: This skill should be used when the user asks to create, scaffold, start or generate a new nopCommerce plugin — "/nop-new-plugin", "new nop plugin", "scaffold a widget plugin", "create a payment plugin for nopCommerce", "make me a plugin that shows X on the product page". Produces a complete, buildable plugin project for nopCommerce 4.90 (or 4.80/4.70 on request).
+description: This skill should be used when the user asks to create, scaffold, start or generate a new nopCommerce plugin — "/nop-new-plugin", "new nop plugin", "scaffold a widget plugin", "create a payment plugin for nopCommerce", "make me a plugin that shows X on the product page". Produces a complete, buildable plugin project for nopCommerce 5.00 (or 4.90/4.80/4.70 on request).
 argument-hint: "[Group.Name] [what it should do]"
 ---
 
@@ -14,7 +14,7 @@ Get these from the request; ask only for what is missing and cannot be defaulted
 
 | Input | Default |
 |---|---|
-| Target version | 4.90 — confirm from the solution if one is open (`src/Libraries/Nop.Core/NopVersion.cs`) |
+| Target version | 5.00 — confirm from the solution if one is open (`src/Libraries/Nop.Core/NopVersion.cs`) |
 | Group | Infer from purpose: shows content → `Widgets`; takes payment → `Payments`; rates → `Shipping`; anything else → `Misc` |
 | Name | PascalCase from the purpose, e.g. `ProductBadges` |
 | Author / company | Ask once if publishing; else `{Company}` placeholder |

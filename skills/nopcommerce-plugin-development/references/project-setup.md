@@ -1,14 +1,14 @@
 # Project setup: .csproj, plugin.json, plugin class
 
-## .csproj for 4.90
+## .csproj for 5.00
 
-Place the project at `src/Plugins/Nop.Plugin.{Group}.{Name}/` and add it to `NopCommerce.sln` (solution folder `Plugins`). This matches the 4.90.8 core plugins:
+Place the project at `src/Plugins/Nop.Plugin.{Group}.{Name}/` and add it to `NopCommerce.sln` (solution folder `Plugins`). This matches the 5.00.0 core plugins:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Copyright>Copyright © {Company}</Copyright>
     <Company>{Company}</Company>
     <Authors>{Company}</Authors>
@@ -71,7 +71,7 @@ Every new `.cshtml` view, static file (js/css/images) and `logo.png` needs its o
 <MSBuild Projects="@(ClearPluginAssemblies)" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
 ```
 
-4.80 and 4.90 both use the `$(SolutionDir)` layout above with `net9.0`; the switch from relative paths happened in 4.80. Core plugins also switched `logo.jpg` → `logo.png` in 4.90 (either works if `plugin.json`/csproj agree; nopCommerce looks for a logo file in the plugin folder).
+4.80, 4.90 and 5.00 all use the `$(SolutionDir)` layout above — 4.80/4.90 with `net9.0`, 5.00 with `net10.0`; the switch from relative paths happened in 4.80. Core plugins also switched `logo.jpg` → `logo.png` in 4.90 (either works if `plugin.json`/csproj agree; nopCommerce looks for a logo file in the plugin folder).
 
 ## plugin.json
 
@@ -81,7 +81,7 @@ Every new `.cshtml` view, static file (js/css/images) and `logo.png` needs its o
   "FriendlyName": "My widget",
   "SystemName": "Widgets.MyWidget",
   "Version": "1.00",
-  "SupportedVersions": [ "4.90" ],
+  "SupportedVersions": [ "5.00" ],
   "Author": "{Company}",
   "DisplayOrder": 1,
   "FileName": "Nop.Plugin.Widgets.MyWidget.dll",
@@ -89,7 +89,7 @@ Every new `.cshtml` view, static file (js/css/images) and `logo.png` needs its o
 }
 ```
 
-- `SupportedVersions` must contain the major version (`"4.90"`), never a minor (`"4.90.8"`). A plugin can list several only if one build truly runs on all of them.
+- `SupportedVersions` must contain the major version (`"5.00"`), never a minor (`"5.00.0"`). A plugin can list several only if one build truly runs on all of them.
 - `Version` is the plugin's own version. Raising it makes nopCommerce call `UpdateAsync(currentVersion, targetVersion)` and run `MigrationProcessType.Update` migrations on next start.
 - Optional: `"LimitedToStores": []`, `"LimitedToCustomerRoles": []`, `"DependsOnSystemNames": []`.
 
@@ -177,9 +177,9 @@ public class MyWidgetPlugin : BasePlugin, IWidgetPlugin
 }
 ```
 
-`INopUrlHelper.RouteUrl(...)` exists only from **4.90**. For 4.70/4.80 either inject `IUrlHelperFactory` + `IActionContextAccessor` (what core did in 4.80) or return `$"{_webHelper.GetStoreLocation()}Admin/MyWidget/Configure"` with `IWebHelper`.
+`INopUrlHelper.RouteUrl(...)` exists from **4.90** (unchanged in 5.00). For 4.70/4.80 either inject `IUrlHelperFactory` + `IActionContextAccessor` (what core did in 4.80) or return `$"{_webHelper.GetStoreLocation()}Admin/MyWidget/Configure"` with `IWebHelper`.
 
-## IPlugin lifecycle (4.90)
+## IPlugin lifecycle (4.90 and 5.00)
 
 `BasePlugin` implements everything virtually; override only what you need:
 
@@ -192,4 +192,4 @@ public class MyWidgetPlugin : BasePlugin, IWidgetPlugin
 | `UninstallAsync()` | Remove everything you added. |
 | `GetConfigurationPageUrl()` | Link for the "Configure" button. |
 
-Plugin-type interfaces (signatures unchanged between 4.70 and 4.90): `IWidgetPlugin`, `IPaymentMethod`, `IShippingRateComputationMethod`, `IPickupPointProvider`, `ITaxProvider`, `IDiscountRequirementRule`, `IExternalAuthenticationMethod`, `IMultiFactorAuthenticationMethod`, `IExchangeRateProvider`, `ISearchProvider`, `IMiscPlugin`. Copy their member list from the target version's `src/Libraries/Nop.Services` when implementing one.
+Plugin-type interfaces (signatures unchanged between 4.70 and 5.00): `IWidgetPlugin`, `IPaymentMethod`, `IShippingRateComputationMethod`, `IPickupPointProvider`, `ITaxProvider`, `IDiscountRequirementRule`, `IExternalAuthenticationMethod`, `IMultiFactorAuthenticationMethod`, `IExchangeRateProvider`, `ISearchProvider`, `IMiscPlugin`. Copy their member list from the target version's `src/Libraries/Nop.Services` when implementing one.

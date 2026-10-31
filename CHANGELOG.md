@@ -2,6 +2,21 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.2.0] — 2026-10-31
+
+nopCommerce 5.00 support.
+
+### Added
+- `/nop-upgrade` hop **4.90 → 5.00** with a new reference (`490-to-500.md`): .NET 10, AutoMapper → Mapster, FluentValidation 12, forums/news/polls moved to plugins, moved namespaces, removed synchronous methods, migration helpers, signature changes, view and front-end changes.
+- 25 new scanner rules for 5.00; `--to` now defaults to 5.00; skip a rule for files that already have the fix (e.g. the new `using`, including through `_ViewImports.cshtml`); path-based rule for theme overrides of views that left core.
+- Sample 4.90 plugin fixture and tests for the new rules, version detection and fixed-file skipping. The 5.00 rules report no breaking issues on the 5.00.0 core plugins.
+
+### Changed
+- New plugins, themes and reviews target **5.00** by default (4.70–4.90 on request); version tables, `.csproj` and `plugin.json` templates updated.
+- README: 5.00 coverage, .NET 8/9 end-of-support note, new upgrade-path illustration.
+
+Version facts verified against nopCommerce source tag `release-5.00.0`.
+
 ## [0.1.0] — 2026-10-31
 
 First release.

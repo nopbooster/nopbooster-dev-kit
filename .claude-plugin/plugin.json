@@ -1,8 +1,8 @@
 {
   "name": "nopbooster-dev-kit",
   "displayName": "NopBooster Dev Kit",
-  "version": "0.1.0",
-  "description": "nopCommerce expertise for Claude: build plugins and themes for nopCommerce 4.90, and upgrade custom code from 4.70 and 4.80 to 4.90. By NopBooster.",
+  "version": "0.2.0",
+  "description": "nopCommerce expertise for Claude: build plugins and themes for nopCommerce 5.00, and upgrade custom code from 4.70, 4.80 and 4.90 to 5.00 on .NET 10. By NopBooster.",
   "author": {
     "name": "NopBooster by Creatrix Technologies",
     "email": "info@creatrixtechnologies.com",

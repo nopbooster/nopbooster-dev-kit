@@ -9,7 +9,7 @@
     {
       "name": "nopbooster-dev-kit",
       "source": "./",
-      "description": "Build nopCommerce 4.90 plugins and themes with Claude, and upgrade custom code from 4.70 and 4.80.",
+      "description": "Build nopCommerce 5.00 plugins and themes with Claude, and upgrade custom code from 4.70, 4.80 and 4.90.",
       "version": "0.1.0",
       "category": "development",
       "homepage": "https://github.com/nopbooster/nopbooster-dev-kit"

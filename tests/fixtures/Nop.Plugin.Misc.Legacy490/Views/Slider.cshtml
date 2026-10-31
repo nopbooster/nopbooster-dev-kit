@@ -1,0 +1,5 @@
+@inject Nop.Core.IWebHelper webHelper
+<div class="swiper-container"><div class="swiper-wrapper"></div></div>
+<script asp-location="Footer">
+    $(function () { new Swiper('.swiper-container', { loop: true }); });
+</script>

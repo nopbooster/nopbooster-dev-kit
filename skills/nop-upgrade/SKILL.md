@@ -1,17 +1,19 @@
 ---
 name: nop-upgrade
-description: This skill should be used when upgrading or migrating nopCommerce plugins, themes or customised code between versions — "/nop-upgrade", "upgrade my plugin to 4.90", "migrate from 4.70 to 4.80", "port this plugin to nopCommerce 4.90", "what breaks when upgrading nopCommerce", "upgrade check", "my plugin doesn't compile after upgrading". Covers 4.70 → 4.80 → 4.90.
-argument-hint: "[path to plugin or theme] [target version, default 4.90]"
+description: This skill should be used when upgrading or migrating nopCommerce plugins, themes or customised code between versions — "/nop-upgrade", "upgrade my plugin to 5.00", "migrate from 4.70 to 4.80", "port this plugin to nopCommerce 4.90", "move to .NET 10", "what breaks when upgrading nopCommerce", "upgrade check", "my plugin doesn't compile after upgrading". Covers 4.70 → 4.80 → 4.90 → 5.00.
+argument-hint: "[path to plugin or theme] [target version, default 5.00]"
 ---
 
-# Upgrade nopCommerce plugins and themes (4.70 / 4.80 → 4.90)
+# Upgrade nopCommerce plugins and themes (4.70 / 4.80 / 4.90 → 5.00)
 
-Upgrade **one major version at a time**: 4.70 → 4.80 → 4.90. Each hop has its own reference; apply them in order.
+Upgrade **one major version at a time**: 4.70 → 4.80 → 4.90 → 5.00. Each hop has its own reference; apply them in order.
+
+Why now: Microsoft ends support for .NET 8 and .NET 9 on 10 November 2026, so 4.70 (.NET 8), 4.80 and 4.90 (.NET 9) stop getting .NET security fixes. 5.00 runs on .NET 10 (supported to November 2028). Mention this once when the user asks which version to target.
 
 ## 1. Establish versions
 
-- Current: `SupportedVersions` in each `plugin.json`, or `<TargetFramework>` (net8.0 = 4.70).
-- Target: 4.90 unless the user says otherwise.
+- Current: `SupportedVersions` in each `plugin.json`, or `<TargetFramework>` (net8.0 = 4.70, net9.0 = 4.80 or 4.90, net10.0 = 5.00).
+- Target: 5.00 unless the user says otherwise (or their store cannot move to .NET 10 yet — then 4.90).
 - Store database upgrades are separate from code upgrades: nopCommerce upgrades the database on first start of the new version (back up first; for very old stores the release's UpgradeScripts package applies). Say this once if the user is upgrading a live store.
 
 ## 2. Scan
@@ -19,10 +21,10 @@ Upgrade **one major version at a time**: 4.70 → 4.80 → 4.90. Each hop has it
 Run the scanner on the plugin or theme folder (a folder containing several plugins also works):
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/scripts/scan_upgrade.py" <path> --to 4.90
+python "${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/scripts/scan_upgrade.py" <path> --to 5.00
 ```
 
-Add `--from 4.70|4.80` if no `plugin.json` is present. Use `python3` where `python` is not available. The report groups findings as BREAK (won't compile/run), CHECK (compiles, may misbehave) and TIDY (recommended), with file:line references. Its rules come from diffs of the real 4.70.5 / 4.80.9 / 4.90.8 source.
+Add `--from 4.70|4.80|4.90` if no `plugin.json` is present. Use `python3` where `python` is not available. The report groups findings as BREAK (won't compile/run), CHECK (compiles, may misbehave) and TIDY (recommended), with file:line references. Its rules come from diffs of the real 4.70.5 / 4.80.9 / 4.90.8 / 5.00.0 source.
 
 The scanner finds known patterns; the compiler finds the rest. Treat both as the work list.
 
@@ -32,6 +34,7 @@ For each hop read the matching reference and work through its checklist:
 
 - 4.70 → 4.80: `references/470-to-480.md` (net9.0, `$(SolutionDir)` csproj, permission system rewrite, admin menu events)
 - 4.80 → 4.90: `references/480-to-490.md` (service splits, payment custom values, menus, `INopUrlHelper`)
+- 4.90 → 5.00: `references/490-to-500.md` (net10.0, AutoMapper → Mapster, FluentValidation 12, forums/news/polls moved to plugins, `IWebHelper` namespace, sync methods removed, migration helpers)
 - Themes and overridden views (any hop): `references/theme-upgrade.md`
 
 Rules while fixing:
@@ -50,6 +53,6 @@ Rules while fixing:
 
 ## 5. Report
 
-Summarise: version hop(s) done, files changed, any behaviour the store owner must act on (e.g. re-assign custom role permissions after 4.70 → 4.80, re-create header links as Menus after 4.90), and anything that could not be verified.
+Summarise: version hop(s) done, files changed, any behaviour the store owner must act on (e.g. re-assign custom role permissions after 4.70 → 4.80, re-create header links as Menus after 4.90, install the Forums/News/Polls plugins after 5.00 if the store used them, move the server to .NET 10), and anything that could not be verified.
 
 If many plugins or a whole theme need upgrading, use the `nop-upgrade-engineer` agent to work through them one at a time.

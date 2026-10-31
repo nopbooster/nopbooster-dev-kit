@@ -4,14 +4,14 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-1975B4"></a>
-  <img alt="nopCommerce 4.70 | 4.80 | 4.90" src="https://img.shields.io/badge/nopCommerce-4.70%20%7C%204.80%20%7C%204.90-1975B4">
+  <img alt="nopCommerce 4.70 | 4.80 | 4.90 | 5.00" src="https://img.shields.io/badge/nopCommerce-4.70%20%7C%204.80%20%7C%204.90%20%7C%205.00-1975B4">
   <img alt=".NET 8 | 9" src="https://img.shields.io/badge/.NET-8%20%7C%209-512BD4">
   <img alt="Claude plugin" src="https://img.shields.io/badge/Claude-plugin-D97757">
   <a href="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml"><img alt="Checks" src="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml/badge.svg"></a>
 </p>
 
 <p align="center">
-  <b>Build nopCommerce 4.90 plugins and themes with Claude — and upgrade your custom code from 4.70 and 4.80.</b><br>
+  <b>Build nopCommerce 5.00 plugins and themes with Claude — and upgrade your custom code from 4.70, 4.80 and 4.90.</b><br>
   Made by <a href="https://www.nopbooster.com">NopBooster</a> · Creatrix Technologies
 </p>
 
@@ -28,7 +28,7 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 - [Install](#install)
 - [Quick start](#quick-start)
 - [Build a new plugin](#build-a-new-plugin)
-- [Upgrade 4.70 / 4.80 → 4.90](#upgrade-470--480--490)
+- [Upgrade 4.70 / 4.80 / 4.90 → 5.00](#upgrade-470--480--490--500)
 - [Review before release](#review-before-release)
 - [Themes](#themes)
 - [Version coverage](#version-coverage)
@@ -86,7 +86,7 @@ With a local copy of this repository, start Claude Code with `claude --plugin-di
 ### What you need for building
 
 - The nopCommerce **source code** of your target version (from [GitHub releases](https://github.com/nopSolutions/nopCommerce/releases)).
-- **.NET 9 SDK** for 4.80 / 4.90, or **.NET 8 SDK** for 4.70.
+- **.NET 10 SDK** for 5.00, **.NET 9 SDK** for 4.80 / 4.90, or **.NET 8 SDK** for 4.70.
 - Python 3 (standard library only) if you want to run the upgrade scanner yourself.
 
 Without a nopCommerce source tree Claude can still write the code; it just can't build it to prove it compiles.
@@ -110,7 +110,7 @@ Open Claude Code in the root of your nopCommerce source (the folder that contain
 Or just ask in your own words:
 
 - *"Add an admin menu item for my plugin under Configuration."*
-- *"This controller is from 4.70 — make it work on 4.90."*
+- *"This controller is from 4.90 — make it work on 5.00."*
 - *"Add a custom permission so only the Warehouse role can open this page."*
 - *"Override the product page in my theme to show the SKU under the title."*
 
@@ -128,7 +128,7 @@ Or just ask in your own words:
 
 | Input | Default |
 |---|---|
-| Target version | 4.90, or whatever your solution is (read from `NopVersion.cs`) |
+| Target version | 5.00, or whatever your solution is (read from `NopVersion.cs`) |
 | Group | Inferred: shows content → `Widgets`, takes payment → `Payments`, otherwise `Misc` |
 | Name | From the description, e.g. `DeliveryMessage` |
 
@@ -136,8 +136,8 @@ Or just ask in your own words:
 
 ```text
 src/Plugins/Nop.Plugin.Widgets.DeliveryMessage/
-├── Nop.Plugin.Widgets.DeliveryMessage.csproj   net9.0, $(SolutionDir) paths, ClearPluginAssemblies
-├── plugin.json                                 SupportedVersions ["4.90"]
+├── Nop.Plugin.Widgets.DeliveryMessage.csproj   net10.0, $(SolutionDir) paths, ClearPluginAssemblies
+├── plugin.json                                 SupportedVersions ["5.00"]
 ├── DeliveryMessagePlugin.cs                    install / uninstall, widget zones
 ├── DeliveryMessageSettings.cs                  per-store settings
 ├── DeliveryMessageDefaults.cs
@@ -155,10 +155,12 @@ src/Plugins/Nop.Plugin.Widgets.DeliveryMessage/
 
 Everything the plugin adds on install (settings, locale strings, widget activation, scheduled tasks, permissions, tables) is removed again on uninstall.
 
-## Upgrade 4.70 / 4.80 → 4.90
+## Upgrade 4.70 / 4.80 / 4.90 → 5.00
+
+> **Why now:** Microsoft ends support for .NET 8 and .NET 9 on **10 November 2026**. nopCommerce 4.70 runs on .NET 8, and 4.80 and 4.90 on .NET 9; nopCommerce 5.00 runs on .NET 10, supported until November 2028.
 
 <p align="center">
-  <img src="docs/images/upgrade-path.svg" alt="Upgrade path 4.70 to 4.80 to 4.90 with the main breaking changes of each hop" width="100%">
+  <img src="docs/images/upgrade-path.svg" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
 </p>
 
 Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
@@ -177,10 +179,10 @@ Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
 The scanner is a small Python script with no dependencies. Claude runs it for you, but you can also run it yourself:
 
 ```bash
-python skills/nop-upgrade/scripts/scan_upgrade.py path/to/your/plugins --to 4.90
+python skills/nop-upgrade/scripts/scan_upgrade.py path/to/your/plugins --to 5.00
 ```
 
-It detects your current version from `plugin.json` (or pass `--from 4.70` / `--from 4.80`) and prints a Markdown report:
+It detects your current version from `plugin.json` (or pass `--from 4.70`, `--from 4.80` or `--from 4.90`) and prints a Markdown report:
 
 | Severity | Meaning |
 |---|---|
@@ -194,6 +196,7 @@ What it knows about:
 |---|---|
 | **4.70 → 4.80** | net8.0 → net9.0 · `StandardPermissionProvider` and `IPermissionProvider` removed → `StandardPermission` + `[CheckPermission]` + `IPermissionConfigManager` · `SiteMapNode` admin menu removed → `AdminMenuCreatedEvent` · `IAdminMenuPlugin` obsolete · `.csproj` moved to `$(SolutionDir)` paths · `ILogger` return types · `AddStoreTokensAsync` / `SendCampaignAsync` new `languageId` · removed `IAclSupportedModelFactory`, `ILocalizedEnum`, product flag helpers |
 | **4.80 → 4.90** | Product reviews → `IProductReviewService` · warehouses → `IWarehouseService` · shipping methods → `IShippingMethodsService` · payment custom values and `OrderPaymentInfo` session reworked · `IPlugin.InstallSampleDataAsync` · specification / product attribute / newsletter / topic API changes · token events moved namespace · PDF documents rewritten · Azure Blob moved to a plugin · menu settings removed · `TopMenu` → `MainMenu` |
+| **4.90 → 5.00** | net9.0 → net10.0 · AutoMapper → Mapster (`BaseMapperProfile`) · FluentValidation 12, `FluentValidation.AspNetCore` and `IsCreditCard()` removed · forums, news and polls moved out of core into plugins (domain, services, message tokens, widget zones, views) · `IWebHelper` → `Nop.Services.Helpers`, `IThemeContext` → `Nop.Services.Themes` · synchronous localization, setting, logger and store methods removed · migration helpers (`this.AddOrUpdateLocaleResource`, no `GetLanguageData`) · `UrlHelperExtensions` removed · `FormatBasePriceAsync`, return-request tokens, `GetListOfAllowedTokensAsync` signatures · Swiper 11 → 14 |
 
 The full lists, with before/after code, are in [`skills/nop-upgrade/references`](skills/nop-upgrade/references).
 
@@ -201,7 +204,7 @@ The full lists, with before/after code, are in [`skills/nop-upgrade/references`]
 
 ### Many plugins at once
 
-Ask for the upgrade engineer, e.g. *"Use the nop-upgrade-engineer to upgrade everything in src/Plugins/Custom to 4.90."* It scans everything first, then upgrades and builds each plugin in turn and returns a status table.
+Ask for the upgrade engineer, e.g. *"Use the nop-upgrade-engineer to upgrade everything in src/Plugins/Custom to 5.00."* It scans everything first, then upgrades and builds each plugin in turn and returns a status table.
 
 ## Review before release
 
@@ -216,21 +219,22 @@ Ask for the upgrade engineer, e.g. *"Use the nop-upgrade-engineer to upgrade eve
 
 ## Themes
 
-The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu**, and 176 public views changed. `/nop-upgrade` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
+The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 176 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-upgrade` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
 
 ## Version coverage
 
 | nopCommerce | .NET | Build new code | Upgrade to it from |
 |---|---|---|---|
-| **4.90** | 9 | ✅ default | 4.80, 4.70 |
+| **5.00** | 10 | ✅ default | 4.90, 4.80, 4.70 |
+| **4.90** | 9 | ✅ on request | 4.80, 4.70 |
 | **4.80** | 9 | ✅ on request | 4.70 |
 | **4.70** | 8 | ✅ on request | — |
 
-Minor releases are covered by their major version (e.g. everything for 4.90 applies to 4.90.0 – 4.90.8). Versions before 4.70 are not covered.
+Minor releases are covered by their major version (e.g. everything for 4.90 applies to 4.90.0 – 4.90.8, and 5.00 was checked against 5.00.0). Versions before 4.70 are not covered.
 
 ## How the knowledge was verified
 
-Rather than relying on blog posts or memory, the Dev Kit's version facts come from comparing the nopCommerce source code itself at tags `release-4.70.5`, `release-4.80.9` and `release-4.90.8`:
+Rather than relying on blog posts or memory, the Dev Kit's version facts come from comparing the nopCommerce source code itself at tags `release-4.70.5`, `release-4.80.9`, `release-4.90.8` and `release-5.00.0`:
 
 - plugin project files, `plugin.json` and code of the core plugins (Google Analytics, Zettle, Pickup in Store);
 - public service interfaces in `Nop.Services`, diffed signature by signature between versions;
@@ -255,7 +259,7 @@ nopbooster-dev-kit/
 │   └── nop-review/                       /nop-review
 ├── agents/
 │   └── nop-upgrade-engineer.md
-├── tests/                     scanner self-test + sample 4.70 plugin
+├── tests/                     scanner self-test + sample 4.70 and 4.90 plugins
 └── docs/images/               README illustrations (SVG)
 ```
 
@@ -268,7 +272,7 @@ Yes — Claude can write and explain code anywhere. To *build* and verify, open 
 No. The plugin is instructions and one local Python script. It adds no servers or connections; your code is handled by Claude like any other project.
 
 **Which version does it use if I don't say?**
-It reads your solution's version. If there is none, it targets 4.90 and tells you so.
+It reads your solution's version. If there is none, it targets 5.00 and tells you so.
 
 **Can it upgrade from 4.60 or older?**
 Not yet. The scanner and references start at 4.70.

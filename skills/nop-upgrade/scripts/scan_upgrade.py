@@ -3,11 +3,12 @@
 NopBooster upgrade scanner for nopCommerce plugins and themes.
 
 Finds code that breaks or needs attention when moving a plugin/theme
-from nopCommerce 4.70 or 4.80 to a newer version (default target 4.90).
-Rules were derived from diffs of the nopCommerce 4.70.5, 4.80.9 and 4.90.8 source.
+from nopCommerce 4.70, 4.80 or 4.90 to a newer version (default target 5.00).
+Rules were derived from diffs of the nopCommerce 4.70.5, 4.80.9, 4.90.8 and
+5.00.0 source.
 
 Usage:
-    python scan_upgrade.py <path> [--from 4.70|4.80] [--to 4.80|4.90]
+    python scan_upgrade.py <path> [--from 4.70|4.80|4.90] [--to 4.80|4.90|5.00]
 
 <path> is a plugin folder, a theme folder, or a folder containing several.
 --from is auto-detected from plugin.json / .csproj when omitted.
@@ -21,9 +22,10 @@ import os
 import re
 import sys
 
-VERSIONS = ["4.70", "4.80", "4.90"]
+VERSIONS = ["4.70", "4.80", "4.90", "5.00"]
 
-# (introduced_in, severity, id, regex, file_glob_kind, message)
+# (introduced_in, severity, id, regex, file_glob_kind, message[, skip_if])
+# skip_if (optional): regex; files containing it are already fixed for this rule
 # introduced_in: the version whose upgrade causes the issue
 # severity: BREAK (won't compile/run), CHECK (compiles but may misbehave), TIDY (recommended)
 RULES = [
@@ -138,6 +140,85 @@ RULES = [
     ("4.90", "BREAK", "top-menu",
      r"\bTopMenuViewComponent\b|Components[/\\]TopMenu\b|\bTopMenuModel\b", "any",
      "TopMenu was replaced by MainMenu (and FooterMenu) in 4.90. Rebuild header navigation customisations on Components/MainMenu."),
+
+    # ---------------- 4.90 -> 5.00 ----------------
+    ("5.00", "BREAK", "net9",
+     r"<TargetFramework>\s*net[89]\.0\s*</TargetFramework>", "csproj",
+     "nopCommerce 5.00 requires net10.0 (and the .NET 10 SDK). Update Microsoft.* package references to 10.0.x as well."),
+    ("5.00", "BREAK", "automapper",
+     r"\busing\s+AutoMapper\b|:\s*Profile\s*,\s*IOrderedMapperProfile|\bAutoMapperConfiguration\b|\bIMapper\b", "cs",
+     "AutoMapper was replaced by Mapster in 5.00. Derive mapping profiles from BaseMapperProfile (Nop.Core.Infrastructure.Mapper), drop 'using AutoMapper' and the Order property; ForMember(..., o => o.Ignore()/MapFrom()) still works."),
+    ("5.00", "BREAK", "automapper-package",
+     r"Include=\"AutoMapper\"|Include=\"FluentValidation\.AspNetCore\"", "csproj",
+     "Core no longer ships AutoMapper or FluentValidation.AspNetCore in 5.00. Remove the package reference (use Mapster via BaseMapperProfile; FluentValidation 12 is provided by core)."),
+    ("5.00", "BREAK", "fluentvalidation-aspnetcore",
+     r"\busing\s+FluentValidation\.AspNetCore\b", "cs",
+     "FluentValidation.AspNetCore is gone in 5.00 (FluentValidation 12). Remove the using; automatic validation comes from [AutoValidation] on BaseController."),
+    ("5.00", "BREAK", "is-credit-card",
+     r"\.IsCreditCard\s*\(|\bCreditCardPropertyValidator\b", "cs",
+     "nop's IsCreditCard()/CreditCardPropertyValidator were removed in 5.00. Use FluentValidation's built-in .CreditCard()."),
+    ("5.00", "BREAK", "iwebhelper-namespace",
+     r"\bI?WebHelper\b", "cs",
+     "IWebHelper/WebHelper moved from Nop.Core to Nop.Services.Helpers in 5.00. Add 'using Nop.Services.Helpers;'.",
+     r"using\s+Nop\.Services\.Helpers\b"),
+    ("5.00", "BREAK", "ithemecontext-namespace",
+     r"\bIThemeContext\b|\busing\s+Nop\.Web\.Framework\.Themes\s*;", "any",
+     "IThemeContext moved from Nop.Web.Framework.Themes to Nop.Services.Themes in 5.00. Update the using.",
+     r"using\s+Nop\.Services\.Themes\b"),
+    ("5.00", "BREAK", "forums-news-polls",
+     r"\bNop\.(Core\.Domain|Services)\.(Forums|News|Polls)\b|\bI(Forum|News|Poll)Service\b|\bIsForumModeratorAsync\b", "any",
+     "Forums, News and Polls left core in 5.00 and are now the Nop.Plugin.Misc.Forums/News/Polls plugins (PrivateMessage moved to Nop.Core.Domain.Customers). Reference the plugin's own types, or drop the feature."),
+    ("5.00", "BREAK", "forum-news-messages",
+     r"[tT]okenProvider\s*\.\s*Add(Forum|ForumTopic|ForumPost|NewsComment)TokensAsync\b|[mM]essageService\s*\.\s*(Send(NewForumTopic|NewForumPost)MessageAsync|SendNewsCommentStoreOwnerNotificationMessageAsync)\b", "cs",
+     "Forum and news message tokens and notifications were removed from core message services in 5.00."),
+    ("5.00", "BREAK", "removed-widget-zones",
+     r"\b(Public|Admin)WidgetZones\s*\.\s*(Boards\w*|NewsItemPage\w*|NewsListPage\w*|HomepageBeforeNews|HomepageBeforePoll|CustomerForumSubscriptions\w*|Forum\w*|News(CommentListButtons|DetailsBlock|DetailsButtons|ItemsDetailsBlock|ListButtons|SettingsButtons)|Poll\w*)\b", "cs",
+     "This widget zone was removed with forums/news/polls in 5.00; the widget will no longer render there."),
+    ("5.00", "BREAK", "bbcode",
+     r"\bI?BBCodeHelper\b|\bResolveLinksHelper\b|\bNop\.Services\.Html\.CodeFormatter\b|\bnop-bb-code-editor\b", "any",
+     "BBCode helpers, ResolveLinksHelper and the code formatter were removed from core in 5.00."),
+    ("5.00", "BREAK", "sync-localization",
+     r"[lL]ocalizationService\s*\.\s*(AddOrUpdateLocaleResource|DeleteLocaleResources|DeleteLocaleStringResource|UpdateLocaleStringResource)\s*\(", "cs",
+     "Synchronous ILocalizationService methods were removed in 5.00. Use the ...Async versions, or this.AddOrUpdateLocaleResource(dict) / this.DeleteLocaleResources(names) inside a migration."),
+    ("5.00", "BREAK", "sync-settings",
+     r"[sS]ettingService\s*\.\s*(InsertSetting|UpdateSetting|DeleteSetting|ClearCache)\s*\(", "cs",
+     "Synchronous ISettingService methods were removed in 5.00. Use the ...Async versions, or this.SetSettingIfNotExists/GetSettingByKey/DeleteSettings inside a migration."),
+    ("5.00", "BREAK", "sync-logger",
+     r"[lL]ogger\s*\.\s*(Error|Information|Warning|InsertLog)\s*\(", "cs",
+     "Synchronous ILogger methods were removed in 5.00. Use ErrorAsync/InformationAsync/WarningAsync/InsertLogAsync."),
+    ("5.00", "BREAK", "sync-store",
+     r"[sS]toreService\s*\.\s*UpdateStore\s*\(", "cs",
+     "IStoreService.UpdateStore was removed in 5.00. Use UpdateStoreAsync."),
+    ("5.00", "BREAK", "migration-language-data",
+     r"\bGetLanguageData\s*\(", "cs",
+     "MigrationExtension.GetLanguageData() was removed in 5.00 (now MigrationExtensions). Use this.AddOrUpdateLocaleResource(dict) and this.RenameLocales(dict) without language/service arguments."),
+    ("5.00", "BREAK", "url-helper-extensions",
+     r"\.\s*RouteTopicUrl\s*\(|\bUrl\s*\.\s*RouteUrl\s*<", "any",
+     "Nop.Web.Framework.Mvc.Routing.UrlHelperExtensions (RouteUrl<TEntity>, RouteTopicUrl) was removed in 5.00. Use INopUrlHelper.RouteGenericUrlAsync<TEntity>() / RouteTopicUrlAsync()."),
+    ("5.00", "BREAK", "removed-mvc-infra",
+     r"\bNopMetadataProvider\b|\bIModelAttribute\b|\bInvariantNumberModelBinder(Provider)?\b|\bRoxyFileman\w*\b", "cs",
+     "Removed in 5.00 (model metadata/binder infrastructure; RoxyFileman was replaced by elFinder)."),
+    ("5.00", "BREAK", "format-base-price",
+     r"\bFormatBasePriceAsync\s*\([^)]*,[^)]*,", "cs",
+     "IPriceFormatter.FormatBasePriceAsync now takes (product, decimal? basePrice). Get the base price from IProductService.GetBaseProductPriceAsync(product, productPrice, totalWeight)."),
+    ("5.00", "CHECK", "return-request-tokens",
+     r"\bAddReturnRequestTokensAsync\s*\(", "cs",
+     "AddReturnRequestTokensAsync gained an Order parameter before orderItem in 5.00."),
+    ("5.00", "CHECK", "allowed-tokens",
+     r"\bGetListOfAllowedTokensAsync\s*\(\s*(?!messageTemplate\s*:|tokenGroups\s*:|\))", "cs",
+     "GetListOfAllowedTokensAsync is now (MessageTemplate messageTemplate = null, IList<string> tokenGroups = null). Pass token groups by name (tokenGroups: ...)."),
+    ("5.00", "CHECK", "contact-us-message",
+     r"\bSendContactUsMessageAsync\s*\(", "cs",
+     "SendContactUsMessageAsync gained IDictionary<string, string> customAttributes in 5.00."),
+    ("5.00", "BREAK", "search-term-by-keyword",
+     r"\bGetSearchTermByKeywordAsync\s*\(", "cs",
+     "ISearchTermService.GetSearchTermByKeywordAsync was removed in 5.00 (search terms are per customer: SearchTermHistoryItemsAsync, DeleteSearchTermsByKeywordAsync)."),
+    ("5.00", "CHECK", "swiper",
+     r"\bnew\s+Swiper\s*\(|\bswiper-(bundle|container)\b", "any",
+     "Swiper went from 11 to 14 in 5.00. Check slider options and markup against the Swiper 14 migration notes."),
+    ("5.00", "CHECK", "removed-public-views",
+     r"(^|[/\\])Views[/\\]((Boards|News)[/\\]|Shared[/\\]Components[/\\](HomepageNews|HomepagePolls|PollBlock|NewsRssHeaderLink)[/\\]|Profile[/\\]Components[/\\]ProfilePosts[/\\]|Boards[/\\]Components[/\\])", "path",
+     "These public views moved from Nop.Web into the Forums/News/Polls plugins in 5.00; theme overrides at these paths are no longer used."),
 ]
 
 SEV_ORDER = {"BREAK": 0, "CHECK": 1, "TIDY": 2}
@@ -161,6 +242,7 @@ def kind_of(path):
 
 def detect_from_version(root):
     found = set()
+    by_framework = set()
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for f in filenames:
@@ -177,17 +259,37 @@ def detect_from_version(root):
                 try:
                     txt = open(full, encoding="utf-8-sig", errors="ignore").read()
                     if "net8.0" in txt:
-                        found.add("4.70")
+                        by_framework.add("4.70")
+                    elif "net9.0" in txt:
+                        by_framework.add("4.80")  # 4.80 or 4.90: scan from the older one
                 except Exception:
                     pass
-    known = [v for v in VERSIONS if v in found]
+    known = [v for v in VERSIONS if v in found] or [v for v in VERSIONS if v in by_framework]
     return known[0] if known else None
+
+
+def view_imports_text(view_path, root):
+    """Text of every _ViewImports.cshtml from the view's folder up to the scan root."""
+    out = []
+    d = os.path.dirname(os.path.abspath(view_path))
+    stop = os.path.abspath(root)
+    while True:
+        vi = os.path.join(d, "_ViewImports.cshtml")
+        if os.path.isfile(vi) and os.path.abspath(vi) != os.path.abspath(view_path):
+            try:
+                out.append(open(vi, encoding="utf-8-sig", errors="ignore").read())
+            except Exception:
+                pass
+        if d == stop or len(d) <= len(stop):
+            break
+        d = os.path.dirname(d)
+    return "\n" + "\n".join(out)
 
 
 def scan(root, from_v, to_v):
     applicable = [r for r in RULES
                   if VERSIONS.index(from_v) < VERSIONS.index(r[0]) <= VERSIONS.index(to_v)]
-    compiled = [(r, re.compile(r[3])) for r in applicable]
+    compiled = [(r, re.compile(r[3]), re.compile(r[6]) if len(r) > 6 else None) for r in applicable]
     hits = {}
     supported_versions = []
     files_scanned = 0
@@ -211,8 +313,18 @@ def scan(root, from_v, to_v):
                     supported_versions.append((rel, data.get("SupportedVersions", []), data.get("Version")))
                 except Exception:
                     pass
-            for (rule, rx) in compiled:
+            whole = "\n".join(lines)
+            if k == "view":
+                # usings in _ViewImports.cshtml apply to every view below it
+                whole += view_imports_text(full, root)
+            for (rule, rx, skip) in compiled:
                 rk = rule[4]
+                if skip and skip.search(whole):
+                    continue
+                if rk == "path":
+                    if k == "view" and rx.search(rel):
+                        hits.setdefault(rule[2], (rule, []))[1].append((rel, 1, "(file path)"))
+                    continue
                 # C# rules also apply to Razor code in views
                 if not (rk == "any" or rk == k or (rk == "cs" and k == "view")):
                     continue
@@ -229,7 +341,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("path")
     ap.add_argument("--from", dest="from_v", choices=VERSIONS[:-1])
-    ap.add_argument("--to", dest="to_v", choices=VERSIONS[1:], default="4.90")
+    ap.add_argument("--to", dest="to_v", choices=VERSIONS[1:], default="5.00")
     a = ap.parse_args()
 
     if not os.path.isdir(a.path):
@@ -238,7 +350,7 @@ def main():
 
     from_v = a.from_v or detect_from_version(a.path)
     if not from_v:
-        print("Could not detect the current version (no plugin.json SupportedVersions). Pass --from 4.70 or --from 4.80.", file=sys.stderr)
+        print("Could not detect the current version (no plugin.json SupportedVersions). Pass --from 4.70, 4.80 or 4.90.", file=sys.stderr)
         sys.exit(2)
     if VERSIONS.index(from_v) >= VERSIONS.index(a.to_v):
         print(f"Nothing to do: --from {from_v} is not older than --to {a.to_v}.")
@@ -270,7 +382,7 @@ def main():
     print("BREAK = will not compile or run · CHECK = compiles, may behave differently · TIDY = recommended\n")
 
     for rule, items in ordered:
-        intro, sev, rid, _, _, msg = rule
+        intro, sev, rid, _, _, msg = rule[:6]
         print(f"## [{sev}] {rid} (changed in {intro})\n")
         print(f"{msg}\n")
         for rel, ln, text in items[:50]:
