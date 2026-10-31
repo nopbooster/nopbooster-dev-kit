@@ -292,6 +292,7 @@ Found something that is wrong for a specific nopCommerce version, or a breaking 
 The Dev Kit is made by **[NopBooster](https://www.nopbooster.com)**, part of Creatrix Technologies — nopCommerce themes, plugins, upgrades and developers for hire.
 
 - Ready-made themes and plugins: [nopbooster.com](https://www.nopbooster.com)
+- Upgrading to nopCommerce 5.00 before .NET 8/9 support ends? [Fixed-price upgrade service with a free upgrade check](https://www.nopbooster.com/nopcommerce-upgrade-service)
 - Custom development, upgrades and support: **sales@nopbooster.com**
 
 ## License
