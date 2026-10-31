@@ -1,0 +1,23 @@
+{
+  "name": "nopbooster-dev-kit",
+  "version": "0.1.0",
+  "description": "nopCommerce expertise for Claude: build plugins and themes for nopCommerce 4.90, and upgrade custom code from 4.70 and 4.80 to 4.90. By NopBooster.",
+  "author": {
+    "name": "NopBooster by Creatrix Technologies",
+    "email": "info@creatrixtechnologies.com",
+    "url": "https://nopbooster.com"
+  },
+  "homepage": "https://nopbooster.com",
+  "license": "MIT",
+  "keywords": [
+    "nopcommerce",
+    "ecommerce",
+    "aspnet-core",
+    "dotnet",
+    "plugin-development",
+    "theme-development",
+    "upgrade",
+    "migration"
+  ],
+  "repository": "https://github.com/nopbooster/nopbooster-dev-kit"
+}

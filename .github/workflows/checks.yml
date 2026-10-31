@@ -1,0 +1,37 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scanner self-test
+        run: python tests/test_scan_upgrade.py
+
+      - name: Manifests are valid JSON
+        run: |
+          python -m json.tool .claude-plugin/plugin.json > /dev/null
+          python -m json.tool .claude-plugin/marketplace.json > /dev/null
+
+      - name: Every skill has a SKILL.md with name and description
+        run: |
+          set -e
+          for d in skills/*/; do
+            f="$d/SKILL.md"
+            test -f "$f" || { echo "missing $f"; exit 1; }
+            head -5 "$f" | grep -q '^name:' || { echo "no name in $f"; exit 1; }
+            grep -q '^description:' "$f" || { echo "no description in $f"; exit 1; }
+          done
+          echo "skills OK"

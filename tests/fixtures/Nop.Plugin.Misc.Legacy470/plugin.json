@@ -1,0 +1,11 @@
+{
+  "Group": "Misc",
+  "FriendlyName": "Legacy sample (4.70)",
+  "SystemName": "Misc.Legacy",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "NopBooster test fixture",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.Legacy.dll",
+  "Description": "Deliberately outdated code used to test the upgrade scanner. Not a working plugin."
+}
