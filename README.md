@@ -80,10 +80,7 @@ Plugins are available on paid Claude plans (Pro, Max, Team, Enterprise).
 
 ### Try it from a local copy (for contributors)
 
-```bash
-git clone https://github.com/nopbooster/nopbooster-dev-kit.git
-claude --plugin-dir ./nopbooster-dev-kit
-```
+With a local copy of this repository, start Claude Code with `claude --plugin-dir <path-to-your-copy>` to load the plugin for one session without installing it.
 
 ### What you need for building
 
@@ -248,7 +245,7 @@ nopbooster-dev-kit/
 ├── .claude-plugin/
 │   ├── plugin.json            plugin manifest
 │   ├── marketplace.json       lets this repo be added as a marketplace
-│   └── icon.png
+│   └── (plugin icon)
 ├── skills/
 │   ├── nopcommerce-plugin-development/   auto-loaded knowledge + references/
 │   ├── nopcommerce-theme-development/    auto-loaded knowledge
@@ -258,7 +255,7 @@ nopbooster-dev-kit/
 ├── agents/
 │   └── nop-upgrade-engineer.md
 ├── tests/                     scanner self-test + sample 4.70 plugin
-└── docs/images/               illustrations (regenerate with docs/images/generate.py)
+└── docs/images/               README illustrations (SVG)
 ```
 
 ## FAQ

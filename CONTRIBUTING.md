@@ -34,7 +34,7 @@ python tests/test_scan_upgrade.py
 claude plugin validate .
 ```
 
-Both must pass. If you changed the illustrations' source, run `python docs/images/generate.py` (needs Pillow) and commit the SVGs.
+Both must pass.
 
 ## License
 
