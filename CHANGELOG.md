@@ -2,6 +2,17 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.3.0] — 2026-11-07
+
+Instructions-only release, so the plugin meets the Claude plugin directory's file-type rules.
+
+### Changed
+- The upgrade scan is now a Markdown checklist, `skills/nop-upgrade/references/scan-rules.md`, that Claude runs with its own search. It carries all 61 rules of the former `scan_upgrade.py` unchanged (patterns, severities, fixes and "already fixed" checks). `/nop-upgrade`, `/nop-review` and the `nop-upgrade-engineer` agent use it.
+- README illustrations are PNG instead of SVG.
+
+### Removed
+- `scan_upgrade.py`, its test suite and the C# sample fixtures. The plugin no longer ships or runs any script.
+
 ## [0.2.0] — 2026-10-31
 
 nopCommerce 5.00 support.

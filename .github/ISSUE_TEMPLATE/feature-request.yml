@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest a new skill, command, scanner rule or version
+description: Suggest a new skill, command, upgrade scan rule or version
 labels: ["enhancement"]
 body:
   - type: textarea

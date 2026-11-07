@@ -44,7 +44,7 @@ Work through every section; skip only what does not apply.
 - Widget views keep working when `additionalData` is null.
 
 **Upgrade safety**
-- Run `python "${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/scripts/scan_upgrade.py" <path> --from <current> --to 5.00` when the code targets 4.70/4.80/4.90 and report what a future upgrade will cost.
+- When the code targets 4.70/4.80/4.90, run the scan in `${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/references/scan-rules.md` from the current version to 5.00 and report what a future upgrade will cost.
 - Theme: count overridden core views; flag overrides that could be replaced by CSS or a widget zone.
 
 ## Output

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/banner.svg" alt="NopBooster Dev Kit — nopCommerce expertise for Claude" width="100%">
+  <img src="docs/images/banner.png" alt="NopBooster Dev Kit — nopCommerce expertise for Claude" width="100%">
 </p>
 
 <p align="center">
@@ -45,14 +45,14 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 | 🧠 | **nopcommerce-plugin-development** | Loads automatically whenever you work on plugin code. Project setup, `plugin.json`, install/uninstall, admin pages and menus, permissions, settings, migrations, events, widgets, scheduled tasks — for 4.90, with the 4.70/4.80 differences. |
 | 🎨 | **nopcommerce-theme-development** | Loads automatically for storefront themes: `theme.json`, view overrides, CSS, RTL, and what changed between versions. |
 | ⚡ | **`/nop-new-plugin`** | Scaffolds a complete, buildable plugin from one sentence. |
-| 🔁 | **`/nop-upgrade`** | Upgrades a plugin or theme one version at a time, guided by a scanner that lists breaking code by file and line. |
+| 🔁 | **`/nop-upgrade`** | Upgrades a plugin or theme one version at a time, guided by a scan that lists breaking code by file and line. |
 | 🔍 | **`/nop-review`** | Reviews a plugin or theme for bugs, security, conventions and future upgrade cost. |
 | 🤖 | **nop-upgrade-engineer** (agent) | Works through many plugins or a whole theme, one at a time, until each builds. |
 
 ## How it works
 
 <p align="center">
-  <img src="docs/images/how-it-works.svg" alt="You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or a review with fixes" width="100%">
+  <img src="docs/images/how-it-works.png" alt="You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or a review with fixes" width="100%">
 </p>
 
 You talk to Claude normally. When the conversation is about nopCommerce, Claude loads the right part of the Dev Kit on its own — only the reference it needs, so it stays fast. Slash commands are there when you want a specific workflow.
@@ -87,7 +87,6 @@ With a local copy of this repository, start Claude Code with `claude --plugin-di
 
 - The nopCommerce **source code** of your target version (from [GitHub releases](https://github.com/nopSolutions/nopCommerce/releases)).
 - **.NET 10 SDK** for 5.00, **.NET 9 SDK** for 4.80 / 4.90, or **.NET 8 SDK** for 4.70.
-- Python 3 (standard library only) if you want to run the upgrade scanner yourself.
 
 Without a nopCommerce source tree Claude can still write the code; it just can't build it to prove it compiles.
 
@@ -117,7 +116,7 @@ Or just ask in your own words:
 ## Build a new plugin
 
 <p align="center">
-  <img src="docs/images/new-plugin-flow.svg" alt="Five steps: describe it, inputs settled, files generated, built, install" width="100%">
+  <img src="docs/images/new-plugin-flow.png" alt="Five steps: describe it, inputs settled, files generated, built, install" width="100%">
 </p>
 
 `/nop-new-plugin` turns one sentence into a complete project, not a skeleton with TODOs.
@@ -160,7 +159,7 @@ Everything the plugin adds on install (settings, locale strings, widget activati
 > **Why now:** Microsoft ends support for .NET 8 and .NET 9 on **10 November 2026**. nopCommerce 4.70 runs on .NET 8, and 4.80 and 4.90 on .NET 9; nopCommerce 5.00 runs on .NET 10, supported until November 2028.
 
 <p align="center">
-  <img src="docs/images/upgrade-path.svg" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
+  <img src="docs/images/upgrade-path.png" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
 </p>
 
 Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
@@ -170,19 +169,13 @@ Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
 3. **Builds** against the target version.
 4. **Tells you what to test**, and what the store owner must do (for example, re-assign custom role permissions after 4.70 → 4.80).
 
-### The upgrade scanner
+### The upgrade scan
 
 <p align="center">
-  <img src="docs/images/scanner-report.svg" alt="Scanner report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line" width="100%">
+  <img src="docs/images/upgrade-scan-report.png" alt="Upgrade scan report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line" width="100%">
 </p>
 
-The scanner is a small Python script with no dependencies. Claude runs it for you, but you can also run it yourself:
-
-```bash
-python skills/nop-upgrade/scripts/scan_upgrade.py path/to/your/plugins --to 5.00
-```
-
-It detects your current version from `plugin.json` (or pass `--from 4.70`, `--from 4.80` or `--from 4.90`) and prints a Markdown report:
+`/nop-upgrade` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-upgrade/references/scan-rules.md): 61 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
 
 | Severity | Meaning |
 |---|---|
@@ -200,7 +193,7 @@ What it knows about:
 
 The full lists, with before/after code, are in [`skills/nop-upgrade/references`](skills/nop-upgrade/references).
 
-> The scanner finds known patterns; the compiler finds the rest. Always build afterwards — the upgrade skill does.
+> The scan finds known patterns; the compiler finds the rest. Always build afterwards — the upgrade skill does.
 
 ### Many plugins at once
 
@@ -241,7 +234,6 @@ Rather than relying on blog posts or memory, the Dev Kit's version facts come fr
 - `Nop.Web.Framework` (admin menu, permissions, URL helpers, startup order);
 - public views and the DefaultClean theme.
 
-The scanner has its own test suite (`tests/`), run on every push, using a deliberately outdated sample plugin.
 
 ## Repository layout
 
@@ -255,12 +247,11 @@ nopbooster-dev-kit/
 │   ├── nopcommerce-plugin-development/   auto-loaded knowledge + references/
 │   ├── nopcommerce-theme-development/    auto-loaded knowledge
 │   ├── nop-new-plugin/                   /nop-new-plugin
-│   ├── nop-upgrade/                      /nop-upgrade + references/ + scripts/scan_upgrade.py
+│   ├── nop-upgrade/                      /nop-upgrade + references/ (incl. scan-rules.md)
 │   └── nop-review/                       /nop-review
 ├── agents/
 │   └── nop-upgrade-engineer.md
-├── tests/                     scanner self-test + sample 4.70 and 4.90 plugins
-└── docs/images/               README illustrations (SVG)
+└── docs/images/               README illustrations (PNG)
 ```
 
 ## FAQ
@@ -269,13 +260,13 @@ nopbooster-dev-kit/
 Yes — Claude can write and explain code anywhere. To *build* and verify, open Claude in a nopCommerce source tree of the target version.
 
 **Does it send my code anywhere?**
-No. The plugin is instructions and one local Python script. It adds no servers or connections; your code is handled by Claude like any other project.
+No. The plugin is instructions only — Markdown, no scripts. It adds no servers or connections; your code is handled by Claude like any other project.
 
 **Which version does it use if I don't say?**
 It reads your solution's version. If there is none, it targets 5.00 and tells you so.
 
 **Can it upgrade from 4.60 or older?**
-Not yet. The scanner and references start at 4.70.
+Not yet. The scan rules and references start at 4.70.
 
 **Will the upgrade change my plugin's behaviour?**
 It is told not to: settings keys, locale resource names, table names and URLs stay the same, and the plugin version is bumped with update migrations so stores upgrade in place.
@@ -285,7 +276,7 @@ Yes, MIT-licensed.
 
 ## Contributing
 
-Found something that is wrong for a specific nopCommerce version, or a breaking change the scanner misses? Please [open an issue](https://github.com/nopbooster/nopbooster-dev-kit/issues/new/choose) with the version and a code sample. Pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+Found something that is wrong for a specific nopCommerce version, or a breaking change the scan misses? Please [open an issue](https://github.com/nopbooster/nopbooster-dev-kit/issues/new/choose) with the version and a code sample. Pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Need a hand?
 

@@ -18,15 +18,9 @@ Why now: Microsoft ends support for .NET 8 and .NET 9 on 10 November 2026, so 4.
 
 ## 2. Scan
 
-Run the scanner on the plugin or theme folder (a folder containing several plugins also works):
+Read `references/scan-rules.md` and follow its "How to run the scan" steps on the plugin or theme folder (a folder containing several plugins also works). It lists every known breaking pattern per version hop as a search pattern, the file types to search and the fix, taken from diffs of the real 4.70.5 / 4.80.9 / 4.90.8 / 5.00.0 source. Report findings as BREAK (won't compile/run), CHECK (compiles, may misbehave) and TIDY (recommended), with file:line references.
 
-```bash
-python "${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/scripts/scan_upgrade.py" <path> --to 5.00
-```
-
-Add `--from 4.70|4.80|4.90` if no `plugin.json` is present. Use `python3` where `python` is not available. The report groups findings as BREAK (won't compile/run), CHECK (compiles, may misbehave) and TIDY (recommended), with file:line references. Its rules come from diffs of the real 4.70.5 / 4.80.9 / 4.90.8 / 5.00.0 source.
-
-The scanner finds known patterns; the compiler finds the rest. Treat both as the work list.
+The scan finds known patterns; the compiler finds the rest. Treat both as the work list.
 
 ## 3. Fix, hop by hop
 
@@ -48,7 +42,7 @@ Rules while fixing:
 ## 4. Verify
 
 1. `dotnet build` from the target-version solution with zero errors and no new warnings in the plugin.
-2. Re-run the scanner: no BREAK items left.
+2. Re-run the scan from `references/scan-rules.md`: no BREAK items left.
 3. Runtime check on a copy of the store: install/upgrade the plugin, open its configuration page as admin **and** as a restricted admin role, use its admin menu entry, and exercise its storefront feature. For payment/shipping/tax plugins place a test order end to end.
 
 ## 5. Report

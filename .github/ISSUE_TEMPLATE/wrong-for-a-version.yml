@@ -1,5 +1,5 @@
 name: Wrong for a nopCommerce version
-description: Claude or the scanner gave advice that is wrong for a specific nopCommerce version
+description: Claude or the upgrade scan gave advice that is wrong for a specific nopCommerce version
 labels: ["accuracy"]
 body:
   - type: dropdown
@@ -13,14 +13,14 @@ body:
     id: area
     attributes:
       label: Area
-      options: ["Plugin development", "Theme development", "/nop-new-plugin", "/nop-upgrade or scanner", "/nop-review", "Other"]
+      options: ["Plugin development", "Theme development", "/nop-new-plugin", "/nop-upgrade or upgrade scan", "/nop-review", "Other"]
     validations:
       required: true
   - type: textarea
     id: wrong
     attributes:
       label: What was wrong
-      description: Paste what Claude produced or the scanner reported.
+      description: Paste what Claude produced or the upgrade scan reported.
     validations:
       required: true
   - type: textarea
