@@ -6,7 +6,7 @@ body:
     id: version
     attributes:
       label: nopCommerce version
-      options: ["4.90.x", "4.80.x", "4.70.x", "Other"]
+      options: ["5.00.x", "4.90.x", "4.80.x", "4.70.x", "Other"]
     validations:
       required: true
   - type: dropdown

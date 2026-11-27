@@ -8,7 +8,7 @@ argument-hint: "[path to plugin or theme] [target version, default 5.00]"
 
 Upgrade **one major version at a time**: 4.70 → 4.80 → 4.90 → 5.00. Each hop has its own reference; apply them in order.
 
-Why now: Microsoft ends support for .NET 8 and .NET 9 on 10 November 2026, so 4.70 (.NET 8), 4.80 and 4.90 (.NET 9) stop getting .NET security fixes. 5.00 runs on .NET 10 (supported to November 2028). Mention this once when the user asks which version to target.
+Why now: Microsoft ended support for .NET 8 and .NET 9 on 10 November 2026, so 4.70 (.NET 8), 4.80 and 4.90 (.NET 9) no longer get .NET security fixes. 5.00 runs on .NET 10 (supported to November 2028). Mention this once when the user asks which version to target.
 
 ## 1. Establish versions
 

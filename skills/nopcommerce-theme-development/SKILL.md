@@ -5,7 +5,7 @@ description: This skill should be used when creating, editing or upgrading a nop
 
 # nopCommerce theme development (5.00 default)
 
-Checked against DefaultClean in 4.70.5, 4.80.9, 4.90.8 and 5.00.0.
+Checked against DefaultClean in 4.70.5, 4.80.9, 4.90.8 and 5.00.0 (unchanged in 5.00.1).
 
 ## How themes work
 
@@ -28,7 +28,7 @@ Themes/MyTheme/
   Views/Shared/Head.cshtml       // registers the CSS files
 ```
 
-`theme.json` (unchanged format 4.70 → 4.90):
+`theme.json` (unchanged format 4.70 → 5.00):
 
 ```json
 {

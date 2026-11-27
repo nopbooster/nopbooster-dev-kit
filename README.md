@@ -5,7 +5,7 @@
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-1975B4"></a>
   <img alt="nopCommerce 4.70 | 4.80 | 4.90 | 5.00" src="https://img.shields.io/badge/nopCommerce-4.70%20%7C%204.80%20%7C%204.90%20%7C%205.00-1975B4">
-  <img alt=".NET 8 | 9" src="https://img.shields.io/badge/.NET-8%20%7C%209-512BD4">
+  <img alt=".NET 8 | 9 | 10" src="https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4">
   <img alt="Claude plugin" src="https://img.shields.io/badge/Claude-plugin-D97757">
   <a href="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml"><img alt="Checks" src="https://github.com/nopbooster/nopbooster-dev-kit/actions/workflows/checks.yml/badge.svg"></a>
 </p>
@@ -19,7 +19,7 @@
 
 Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugin and it often targets the wrong .NET version, uses APIs that were removed two releases ago, or forgets the files nopCommerce needs to load a plugin at all.
 
-**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge, plus commands to scaffold plugins, upgrade old code and review work before release. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9 and 4.90.8**.
+**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge, plus commands to scaffold plugins, upgrade old code and review work before release. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9, 4.90.8 and 5.00.0**, and re-checked against **5.00.1**.
 
 ## Contents
 
@@ -42,7 +42,7 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 
 | | Name | What it does |
 |---|---|---|
-| 🧠 | **nopcommerce-plugin-development** | Loads automatically whenever you work on plugin code. Project setup, `plugin.json`, install/uninstall, admin pages and menus, permissions, settings, migrations, events, widgets, scheduled tasks — for 4.90, with the 4.70/4.80 differences. |
+| 🧠 | **nopcommerce-plugin-development** | Loads automatically whenever you work on plugin code. Project setup, `plugin.json`, install/uninstall, admin pages and menus, permissions, settings, migrations, events, widgets, scheduled tasks — for 5.00, with the 4.70/4.80/4.90 differences. |
 | 🎨 | **nopcommerce-theme-development** | Loads automatically for storefront themes: `theme.json`, view overrides, CSS, RTL, and what changed between versions. |
 | ⚡ | **`/nop-new-plugin`** | Scaffolds a complete, buildable plugin from one sentence. |
 | 🔁 | **`/nop-upgrade`** | Upgrades a plugin or theme one version at a time, guided by a scan that lists breaking code by file and line. |
@@ -68,8 +68,7 @@ You talk to Claude normally. When the conversation is about nopCommerce, Claude 
 
 Restart Claude Code, then type `/nop` to see the commands.
 
-> **Once the plugin is approved in the Claude plugin directory**, it will also install with
-> `/plugin install nopbooster-dev-kit@claude-plugins-official`, or from **/plugin → Discover**.
+> The plugin is also submitted to the Claude plugin directory. Once it is approved there, you will be able to add it from the directory inside Claude as well.
 
 ### Claude app (desktop and web)
 
@@ -156,7 +155,7 @@ Everything the plugin adds on install (settings, locale strings, widget activati
 
 ## Upgrade 4.70 / 4.80 / 4.90 → 5.00
 
-> **Why now:** Microsoft ends support for .NET 8 and .NET 9 on **10 November 2026**. nopCommerce 4.70 runs on .NET 8, and 4.80 and 4.90 on .NET 9; nopCommerce 5.00 runs on .NET 10, supported until November 2028.
+> **Why now:** Microsoft ended support for .NET 8 and .NET 9 on **10 November 2026**, so they no longer get security fixes. nopCommerce 4.70 runs on .NET 8, and 4.80 and 4.90 on .NET 9; nopCommerce 5.00 runs on .NET 10, supported until November 2028.
 
 <p align="center">
   <img src="docs/images/upgrade-path.png" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
@@ -223,11 +222,11 @@ The theme skill covers `theme.json`, how view overrides work, registering CSS, R
 | **4.80** | 9 | ✅ on request | 4.70 |
 | **4.70** | 8 | ✅ on request | — |
 
-Minor releases are covered by their major version (e.g. everything for 4.90 applies to 4.90.0 – 4.90.8, and 5.00 was checked against 5.00.0). Versions before 4.70 are not covered.
+Minor releases are covered by their major version (e.g. everything for 4.90 applies to 4.90.0 – 4.90.8, and 5.00 was checked against 5.00.0 and 5.00.1). Versions before 4.70 are not covered.
 
 ## How the knowledge was verified
 
-Rather than relying on blog posts or memory, the Dev Kit's version facts come from comparing the nopCommerce source code itself at tags `release-4.70.5`, `release-4.80.9`, `release-4.90.8` and `release-5.00.0`:
+Rather than relying on blog posts or memory, the Dev Kit's version facts come from comparing the nopCommerce source code itself at tags `release-4.70.5`, `release-4.80.9`, `release-4.90.8` and `release-5.00.0` (5.00.1 was diffed against 5.00.0 and changes nothing the Dev Kit describes):
 
 - plugin project files, `plugin.json` and code of the core plugins (Google Analytics, Zettle, Pickup in Store);
 - public service interfaces in `Nop.Services`, diffed signature by signature between versions;
@@ -242,7 +241,7 @@ nopbooster-dev-kit/
 ├── .claude-plugin/
 │   ├── plugin.json            plugin manifest
 │   ├── marketplace.json       lets this repo be added as a marketplace
-│   └── (plugin icon)
+│   └── icon.png               directory listing icon
 ├── skills/
 │   ├── nopcommerce-plugin-development/   auto-loaded knowledge + references/
 │   ├── nopcommerce-theme-development/    auto-loaded knowledge
@@ -251,7 +250,7 @@ nopbooster-dev-kit/
 │   └── nop-review/                       /nop-review
 ├── agents/
 │   └── nop-upgrade-engineer.md
-└── docs/images/               README illustrations (PNG)
+└── docs/                      README illustrations
 ```
 
 ## FAQ
@@ -283,7 +282,7 @@ Found something that is wrong for a specific nopCommerce version, or a breaking 
 The Dev Kit is made by **[NopBooster](https://www.nopbooster.com)**, part of Creatrix Technologies — nopCommerce themes, plugins, upgrades and developers for hire.
 
 - Ready-made themes and plugins: [nopbooster.com](https://www.nopbooster.com)
-- Upgrading to nopCommerce 5.00 before .NET 8/9 support ends? [Fixed-price upgrade service with a free upgrade check](https://www.nopbooster.com/nopcommerce-upgrade-service)
+- Upgrading to nopCommerce 5.00 now that .NET 8/9 support has ended? [Fixed-price upgrade service with a free upgrade check](https://www.nopbooster.com/nopcommerce-upgrade-service)
 - Custom development, upgrades and support: **sales@nopbooster.com**
 
 ## License

@@ -5,12 +5,12 @@ description: This skill should be used when writing, editing or explaining nopCo
 
 # nopCommerce plugin development (5.00 default)
 
-Apply these rules whenever producing or changing nopCommerce plugin code. They were checked against the nopCommerce source of releases 4.70.5, 4.80.9, 4.90.8 and 5.00.0.
+Apply these rules whenever producing or changing nopCommerce plugin code. They were checked against the nopCommerce source of releases 4.70.5, 4.80.9, 4.90.8 and 5.00.0; 5.00.1 changes nothing described here.
 
 ## 1. Establish the target version first
 
 1. Look for the version before writing code: `SupportedVersions` in an existing `plugin.json`, `<TargetFramework>` in a plugin `.csproj`, or `NopVersion.CURRENT_VERSION` in `src/Libraries/Nop.Core/NopVersion.cs`.
-2. If nothing tells you, target **5.00** and say so in one line. (4.70–4.90 run on .NET 8/9, which lose Microsoft support on 10 November 2026.)
+2. If nothing tells you, target **5.00** and say so in one line. (4.70–4.90 run on .NET 8/9, which lost Microsoft support on 10 November 2026.)
 3. Version facts:
 
 | | 4.70 | 4.80 | 4.90 | 5.00 |

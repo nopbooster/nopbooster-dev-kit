@@ -2,6 +2,20 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.3.1] — 2026-11-27
+
+Fixes for the Claude plugin directory review, and wording brought up to date.
+
+### Changed
+- `plugin.json` now names the listing icon with the `icon` field.
+- README banner and "How it works" illustrations redrawn for nopCommerce 5.00 (they still showed 4.90).
+- .NET 8 and .NET 9 support ended on 10 November 2026: the README and the upgrade and plugin skills now say so in the past tense.
+- README: .NET badge includes 10, the knowledge table and install note corrected for 5.00.
+- Issue template offers 5.00.x.
+
+### Verified
+- nopCommerce `release-5.00.1` diffed against `release-5.00.0`: no change to any API, project file, view path or theme file the Dev Kit describes.
+
 ## [0.3.0] — 2026-11-07
 
 Instructions-only release, so the plugin meets the Claude plugin directory's file-type rules.
