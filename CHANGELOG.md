@@ -2,6 +2,16 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.4.1] — 2026-11-27
+
+Directory guideline pass.
+
+### Changed
+- Description states the release the kit was checked against, nopCommerce 5.00.1.
+- README shows bundled illustrations with Markdown image syntax and no longer writes an image path in a code block, as the directory checklist asks.
+- README has a "What the plugin runs" section listing every command the skills ask Claude to run.
+- Theme upgrades ask before downloading nopCommerce source that is not already on the machine.
+
 ## [0.4.0] — 2026-11-27
 
 Shorter, clearer names, one skill fewer, and stricter guard rails. Nothing was published under the old names, so there is nothing to migrate.

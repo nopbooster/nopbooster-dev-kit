@@ -4,7 +4,7 @@ Themes break silently: an outdated overridden view usually still renders, but lo
 
 ## Procedure
 
-1. **Get both DefaultClean versions and both core `Views` folders** (old and target), e.g. from the nopCommerce source zips or the GitHub tags `release-4.90.8` and `release-5.00.0`.
+1. **Get both DefaultClean versions and both core `Views` folders** (old and target), e.g. from the nopCommerce source zips or the GitHub tags `release-4.90.8` and `release-5.00.0`. Use local copies when they exist. If they are not on the machine, ask the user before downloading anything.
 2. **List the theme's overrides:** every file under `Themes/{Theme}/Views/` except `_ViewImports.cshtml`.
 3. **For each override, three-way compare:** old core view → target core view (what nopCommerce changed) and old core view → theme view (what the theme changed). Re-apply the theme's changes onto the **target** core view. Never just keep the old theme file.
    - Quick classification: `diff -rq old/Views new/Views` lists changed core views; overrides of unchanged core views need no work.

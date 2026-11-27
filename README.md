@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="docs/images/banner.png" alt="NopBooster Dev Kit — nopCommerce expertise for Claude" width="100%">
-</p>
+![NopBooster Dev Kit — nopCommerce expertise for Claude](docs/images/banner.png)
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-1975B4"></a>
@@ -12,6 +10,7 @@
 
 <p align="center">
   <b>Build nopCommerce 5.00 plugins and themes with Claude — and upgrade your custom code from 4.70, 4.80 and 4.90.</b><br>
+  Checked against nopCommerce 5.00.1 ·
   Made by <a href="https://www.nopbooster.com">NopBooster</a> · Creatrix Technologies
 </p>
 
@@ -31,6 +30,7 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 - [Upgrade 4.70 / 4.80 / 4.90 → 5.00](#upgrade-470--480--490--500)
 - [Audit before release](#audit-before-release)
 - [Themes](#themes)
+- [What the plugin runs](#what-the-plugin-runs)
 - [Version coverage](#version-coverage)
 - [How the knowledge was verified](#how-the-knowledge-was-verified)
 - [Repository layout](#repository-layout)
@@ -50,9 +50,7 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 
 ## How it works
 
-<p align="center">
-  <img src="docs/images/how-it-works.png" alt="You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or an audit with fixes" width="100%">
-</p>
+![You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or an audit with fixes](docs/images/how-it-works.png)
 
 You talk to Claude normally. When the conversation is about nopCommerce, Claude loads the right part of the Dev Kit on its own — only the reference it needs, so it stays fast. Slash commands are there when you want a specific workflow.
 
@@ -113,9 +111,7 @@ Or just ask in your own words:
 
 ## Build a new plugin
 
-<p align="center">
-  <img src="docs/images/new-plugin-flow.png" alt="Five steps: describe it, inputs settled, files generated, built, install" width="100%">
-</p>
+![Five steps: describe it, inputs settled, files generated, built, install](docs/images/new-plugin-flow.png)
 
 `/nop-plugin` turns one sentence into a complete project, not a skeleton with TODOs.
 
@@ -156,9 +152,7 @@ Everything the plugin adds on install (settings, locale strings, widget activati
 
 > **Why now:** Microsoft ended support for .NET 8 and .NET 9 on **10 November 2026**, so they no longer get security fixes. nopCommerce 4.70 runs on .NET 8, and 4.80 and 4.90 on .NET 9; nopCommerce 5.00 runs on .NET 10, supported until November 2028.
 
-<p align="center">
-  <img src="docs/images/upgrade-path.png" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
-</p>
+![Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop](docs/images/upgrade-path.png)
 
 Upgrades go **one version at a time**. For each hop, `/nop-migrate`:
 
@@ -169,9 +163,7 @@ Upgrades go **one version at a time**. For each hop, `/nop-migrate`:
 
 ### The upgrade scan
 
-<p align="center">
-  <img src="docs/images/upgrade-scan-report.png" alt="Upgrade scan report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line" width="100%">
-</p>
+![Upgrade scan report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line](docs/images/upgrade-scan-report.png)
 
 `/nop-migrate` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-migrate/references/scan-rules.md): 61 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
 
@@ -212,6 +204,16 @@ Ask for the bulk migrator, e.g. *"Use the nop-bulk-migrator to upgrade everythin
 
 The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 176 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-migrate` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
 
+## What the plugin runs
+
+The Dev Kit contains no code of its own: no scripts, hooks, servers or connectors. Its skills are instructions that ask Claude to do the following in your project, with the same permission prompts as any other Claude session:
+
+- **Read and search** your plugin, theme and nopCommerce source files.
+- **Create and edit** files in the plugin or theme you are working on. It is told never to edit nopCommerce core projects.
+- **Run** `dotnet build` and `dotnet sln add` on your solution, and `git status` to check the starting point before an upgrade.
+
+The skills contain no download commands. They send nothing anywhere, store no data, and never commit or push on their own. One step needs outside files: a theme upgrade compares the old and the target nopCommerce source, and if those are not on your machine Claude asks before downloading them from the official nopCommerce releases.
+
 ## Version coverage
 
 | nopCommerce | .NET | Build new code | Upgrade to it from |
@@ -240,7 +242,7 @@ nopbooster-dev-kit/
 ├── .claude-plugin/
 │   ├── plugin.json            plugin manifest
 │   ├── marketplace.json       lets this repo be added as a marketplace
-│   └── icon.png               directory listing icon
+│   └── (listing icon)
 ├── skills/
 │   ├── nop-plugin/            build, edit and scaffold plugins + references/
 │   ├── nop-theme/             build and edit themes
@@ -257,7 +259,7 @@ nopbooster-dev-kit/
 Yes — Claude can write and explain code anywhere. To *build* and verify, open Claude in a nopCommerce source tree of the target version.
 
 **Does it send my code anywhere?**
-No. The plugin is instructions only — Markdown, no scripts. It adds no servers or connections; your code is handled by Claude like any other project.
+No. The plugin is instructions only — Markdown, no scripts. It adds no servers or connections; your code is handled by Claude like any other project. See [What the plugin runs](#what-the-plugin-runs).
 
 **Which version does it use if I don't say?**
 It reads your solution's version. If there is none, it targets 5.00 and tells you so.
