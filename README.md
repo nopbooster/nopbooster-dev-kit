@@ -18,7 +18,7 @@
 
 Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugin and it often targets the wrong .NET version, uses APIs that were removed two releases ago, or forgets the files nopCommerce needs to load a plugin at all.
 
-**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge: four skills to build plugins and themes, upgrade old code and audit work before release, plus an agent for bulk upgrades. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9, 4.90.8 and 5.00.0**, and re-checked against **5.00.1**.
+**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge: four skills to build plugins and themes, upgrade old code and audit work before release, plus an agent for bulk upgrades. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9, 4.90.8, 5.00.0 and 5.00.1**.
 
 ## Contents
 
@@ -165,7 +165,7 @@ Upgrades go **one version at a time**. For each hop, `/nop-migrate`:
 
 ![Upgrade scan report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line](docs/images/upgrade-scan-report.png)
 
-`/nop-migrate` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-migrate/references/scan-rules.md): 61 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
+`/nop-migrate` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-migrate/references/scan-rules.md): 73 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
 
 | Severity | Meaning |
 |---|---|
@@ -179,7 +179,7 @@ What it knows about:
 |---|---|
 | **4.70 → 4.80** | net8.0 → net9.0 · `StandardPermissionProvider` and `IPermissionProvider` removed → `StandardPermission` + `[CheckPermission]` + `IPermissionConfigManager` · `SiteMapNode` admin menu removed → `AdminMenuCreatedEvent` · `IAdminMenuPlugin` obsolete · `.csproj` moved to `$(SolutionDir)` paths · `ILogger` return types · `AddStoreTokensAsync` / `SendCampaignAsync` new `languageId` · removed `IAclSupportedModelFactory`, `ILocalizedEnum`, product flag helpers |
 | **4.80 → 4.90** | Product reviews → `IProductReviewService` · warehouses → `IWarehouseService` · shipping methods → `IShippingMethodsService` · payment custom values and `OrderPaymentInfo` session reworked · `IPlugin.InstallSampleDataAsync` · specification / product attribute / newsletter / topic API changes · token events moved namespace · PDF documents rewritten · Azure Blob moved to a plugin · menu settings removed · `TopMenu` → `MainMenu` |
-| **4.90 → 5.00** | net9.0 → net10.0 · AutoMapper → Mapster (`BaseMapperProfile`) · FluentValidation 12, `FluentValidation.AspNetCore` and `IsCreditCard()` removed · forums, news and polls moved out of core into plugins (domain, services, message tokens, widget zones, views) · `IWebHelper` → `Nop.Services.Helpers`, `IThemeContext` → `Nop.Services.Themes` · synchronous localization, setting, logger and store methods removed · migration helpers (`this.AddOrUpdateLocaleResource`, no `GetLanguageData`) · `UrlHelperExtensions` removed · `FormatBasePriceAsync`, return-request tokens, `GetListOfAllowedTokensAsync` signatures · Swiper 11 → 14 |
+| **4.90 → 5.00** | net9.0 → net10.0 · AutoMapper → Mapster (`BaseMapperProfile`) · FluentValidation 12, `FluentValidation.AspNetCore` and `IsCreditCard()` removed · forums, news and polls moved out of core into plugins (domain, services, message tokens, widget zones, views) · `IWebHelper` → `Nop.Services.Helpers`, `IThemeContext` → `Nop.Services.Themes` · synchronous localization, setting, logger and store methods removed · every synchronous setting, store, language, repository and event-publisher method removed · `Create.TableFor` removed (schema migrations use `CreateTableIfNotExists` / `DeleteTableIfExists`) · migration helpers (`this.AddOrUpdateLocaleResource`, no `GetLanguageData`) · `ResetCheckoutDataAsync` moved, `GetMaskedCreditCardNumber` and `RemotePost.Post` gone · view components use `ViewAsync` · `UrlHelperExtensions` removed · `FormatBasePriceAsync`, return-request tokens, `GetListOfAllowedTokensAsync` signatures · Swiper 11 → 14 |
 
 The full lists, with before/after code, are in [`skills/nop-migrate/references`](skills/nop-migrate/references).
 
@@ -202,7 +202,7 @@ Ask for the bulk migrator, e.g. *"Use the nop-bulk-migrator to upgrade everythin
 
 ## Themes
 
-The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 176 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-migrate` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
+The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 165 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-migrate` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
 
 ## What the plugin runs
 
@@ -233,6 +233,8 @@ Rather than relying on blog posts or memory, the Dev Kit's version facts come fr
 - public service interfaces in `Nop.Services`, diffed signature by signature between versions;
 - `Nop.Web.Framework` (admin menu, permissions, URL helpers, startup order);
 - public views and the DefaultClean theme.
+
+The scan rules are also tested against nopCommerce's own plugins: on the target version's code they must raise no false breaking finding, and on the previous version's code they must flag what nopCommerce itself had to change.
 
 
 ## Repository layout

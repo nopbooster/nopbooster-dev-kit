@@ -11,7 +11,7 @@ Checked against DefaultClean in 4.70.5, 4.80.9, 4.90.8 and 5.00.0 (unchanged in 
 
 - A theme lives in `src/Presentation/Nop.Web/Themes/{ThemeName}/`.
 - A view placed in the theme **overrides** the core view at the same relative path: `Themes/MyTheme/Views/Product/ProductTemplate.Simple.cshtml` replaces `Views/Product/ProductTemplate.Simple.cshtml`. Anything not overridden falls back to core.
-- Override as few views as possible. Every overridden view must be re-merged on each nopCommerce upgrade — between 4.80.9 and 4.90.8 alone, 176 public view files changed (51 more between 4.90.8 and 5.00.0). Prefer CSS, widget zones and plugins over copying views.
+- Override as few views as possible. Every overridden view must be re-merged on each nopCommerce upgrade — between 4.80.9 and 4.90.8 alone, 165 public view files changed and 14 were added (51 more changed, 31 removed and 7 added between 4.90.8 and 5.00.1). Prefer CSS, widget zones and plugins over copying views.
 - The working theme is chosen in **Admin → Configuration → Settings → General settings** (and per customer if "Allow customers to select a theme" is on).
 
 ## Minimal theme

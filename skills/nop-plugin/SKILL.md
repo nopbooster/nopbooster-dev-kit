@@ -30,7 +30,7 @@ When the user asks for a plugin that does not exist yet, or runs `/nop-plugin` w
 
 Minor releases (e.g. 4.90.0–4.90.8) are binary compatible: a plugin built for 4.90 works on every 4.90.x.
 
-5.00 specifics when writing new code: derive mapping profiles from `BaseMapperProfile`; `using Nop.Services.Helpers;` for `IWebHelper` and `using Nop.Services.Themes;` for `IThemeContext`; only async service methods exist; forums, news and polls are plugins now (`Nop.Plugin.Misc.Forums/News/Polls`), not core; in migrations use `this.AddOrUpdateLocaleResource(dict)`. Details: the `nop-migrate` skill's `references/490-to-500.md`.
+5.00 specifics when writing new code: derive mapping profiles from `BaseMapperProfile`; `using Nop.Services.Helpers;` for `IWebHelper` and `using Nop.Services.Themes;` for `IThemeContext`; only async service methods exist; forums, news and polls are plugins now (`Nop.Plugin.Misc.Forums/News/Polls`), not core; in migrations use `this.AddOrUpdateLocaleResource(dict)`, and create tables with `this.CreateTableIfNotExists<T>()` in a `Migration` (not `Create.TableFor<T>()`, which was removed); view components return `await ViewAsync(...)`; events are published with `PublishAsync` only. Details: the `nop-migrate` skill's `references/490-to-500.md`.
 
 ## 2. Non-negotiable conventions
 

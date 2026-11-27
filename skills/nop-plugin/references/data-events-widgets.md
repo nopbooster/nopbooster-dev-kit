@@ -32,7 +32,7 @@ public class MyRecordBuilder : NopEntityBuilder<MyRecord>
 }
 ```
 
-Schema migration (`Data/SchemaMigration.cs`):
+Schema migration (`Data/SchemaMigration.cs`) for **5.00**:
 
 ```csharp
 using FluentMigrator;
@@ -41,7 +41,24 @@ using Nop.Data.Migrations;
 
 namespace Nop.Plugin.Misc.MyFeature.Data;
 
-[NopMigration("2026/10/31 12:00:00", "Misc.MyFeature base schema", MigrationProcessType.Installation)]
+[NopMigration("2026-10-31 12:00:00", "Misc.MyFeature base schema", MigrationProcessType.Installation)]
+public class SchemaMigration : Migration
+{
+    public override void Up()
+    {
+        this.CreateTableIfNotExists<MyRecord>();
+    }
+
+    public override void Down()
+    {
+        this.DeleteTableIfExists<MyRecord>();
+    }
+}
+```
+
+In **4.70–4.90** the same migration is written differently, and the 5.00 form does not exist there:
+
+```csharp
 public class SchemaMigration : AutoReversingMigration
 {
     public override void Up()
@@ -51,27 +68,56 @@ public class SchemaMigration : AutoReversingMigration
 }
 ```
 
+`Create.TableFor<T>()` was removed in 5.00, and no 5.00 core plugin uses `AutoReversingMigration` any more.
+
 - The date string must be unique across all migrations ever loaded — use the real date/time you write it.
 - `MigrationProcessType`: `Installation` (runs when the plugin is installed), `Update` (runs on app start when not yet applied — use for changes in later plugin versions), `NoMatter`.
-- On uninstall nopCommerce runs the plugin assembly's **down** migrations, so `AutoReversingMigration` drops the table automatically. For hand-written `Migration` classes implement `Down()` yourself.
+- On uninstall nopCommerce runs the plugin assembly's **down** migrations, so `Down()` must drop what `Up()` created (in 4.70–4.90 `AutoReversingMigration` does that for you).
 
-Later change (version 1.01):
+Later change (version 1.01), **5.00**:
 
 ```csharp
-[NopMigration("2026/12/01 09:00:00", "Misc.MyFeature 1.01 add Status", MigrationProcessType.Update)]
+[NopMigration("2026-12-01 09:00:00", "Misc.MyFeature 1.01 add Status", MigrationProcessType.Update)]
 public class AddStatusMigration : Migration
 {
     public override void Up()
     {
-        if (!Schema.Table(nameof(MyRecord)).Column("Status").Exists())
-            Alter.Table(nameof(MyRecord)).AddColumn("Status").AsInt32().NotNullable().WithDefaultValue(0);
+        this.AddOrAlterColumnFor<MyRecord>(t => t.Status).AsInt32().NotNullable().WithDefaultValue(0);
     }
 
     public override void Down() { }
 }
 ```
 
-Locale-resource-only updates follow the same pattern (see `Migrations/UpgradeTo470/LocalizationMigration.cs` in the core Google Analytics plugin): guard with `if (!DataSettingsManager.IsDatabaseInstalled()) return;`, resolve `ILocalizationService` via `EngineContext.Current.Resolve<ILocalizationService>()`, then call the synchronous `AddOrUpdateLocaleResource(dictionary, languageId)`.
+In 4.70–4.90 there is no `AddOrAlterColumnFor`; guard and alter by hand: `if (!Schema.Table(nameof(MyRecord)).Column("Status").Exists()) Alter.Table(nameof(MyRecord)).AddColumn("Status").AsInt32().NotNullable().WithDefaultValue(0);`
+
+Locale-resource and setting updates in **5.00** use the migration helpers in `Nop.Web.Framework.Extensions` (see `Migrations/UpgradeTo470/LocalizationMigration.cs` in the core `Tax.FixedOrByCountryStateZip` plugin):
+
+```csharp
+using FluentMigrator;
+using Nop.Data;
+using Nop.Data.Migrations;
+using Nop.Web.Framework.Extensions;
+
+[NopMigration("2026-12-01 09:30:00", "Misc.MyFeature 1.01 locales", MigrationProcessType.Update)]
+public class LocalizationMigration : MigrationBase
+{
+    public override void Up()
+    {
+        if (!DataSettingsManager.IsDatabaseInstalled())
+            return;
+
+        this.AddOrUpdateLocaleResource(new Dictionary<string, string>
+        {
+            ["Plugins.Misc.MyFeature.Status"] = "Status",
+        });
+    }
+
+    public override void Down() { }
+}
+```
+
+Other helpers there: `RenameLocales`, `DeleteLocaleResources`, `SetSettingIfNotExists`, `GetSettingByKey<T>`, `DeleteSettings`, `DeleteSettingsByNames`. In 4.70–4.90 these helpers do not exist in this form: resolve `ILocalizationService` via `EngineContext.Current.Resolve<ILocalizationService>()` and call the synchronous `AddOrUpdateLocaleResource(dictionary, languageId)`, which 5.00 removed.
 
 Data access: inject `IRepository<MyRecord>` and use `GetByIdAsync`, `GetAllAsync(query => …)`, `GetAllPagedAsync(...)`, `InsertAsync`, `UpdateAsync`, `DeleteAsync`. Never query the DbContext directly; nopCommerce uses Linq2DB, not Entity Framework.
 
@@ -141,10 +187,12 @@ public class MyWidgetViewComponent : NopViewComponent
         if (additionalData is not ProductDetailsModel product)
             return Content(string.Empty);
 
-        return View("~/Plugins/Widgets.MyWidget/Views/PublicInfo.cshtml", product);
+        return await ViewAsync("~/Plugins/Widgets.MyWidget/Views/PublicInfo.cshtml", product);
     }
 }
 ```
+
+`ViewAsync` is the 5.00 form and is what publishes the model-prepared event. In 4.70–4.90 `NopViewComponent` has no `ViewAsync`: write `return View("~/Plugins/…/PublicInfo.cshtml", product);` there (and drop `async` if nothing else is awaited).
 
 - Zones: `PublicWidgetZones` (Nop.Web.Framework.Infrastructure) and `AdminWidgetZones`. Use the constants, not raw strings.
 - `additionalData` is the page's model for zones that pass one (product page zones pass `ProductDetailsModel`).

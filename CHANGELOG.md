@@ -2,6 +2,30 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.5.0] — 2026-11-27
+
+Accuracy release. The kit was tested against nopCommerce's own plugins in 4.70.5, 4.80.9, 4.90.8 and 5.00.1, and the errors and gaps that testing found are fixed. Scan rules: 61 → 73.
+
+### Fixed — would have produced code that does not compile on 5.00
+- Plugin template for own tables used `AutoReversingMigration` + `Create.TableFor<T>()`. `Create.TableFor` does not exist in 5.00. The 5.00 template now uses `Migration` with `this.CreateTableIfNotExists<T>()` / `this.DeleteTableIfExists<T>()`; the 4.70–4.90 form is kept as the older variant.
+- Locale-update migration example called the synchronous `AddOrUpdateLocaleResource`, removed in 5.00. It now uses `this.AddOrUpdateLocaleResource(...)`.
+- Widget template now returns `await ViewAsync(...)`, the 5.00 form.
+
+### Fixed — wrong or incomplete upgrade rules
+- 4.70 → 4.80: `IAclSupportedModelFactory` was described as removed. It moved to `Nop.Web.Areas.Admin.Factories` and one overload changed.
+- 4.80 → 4.90: token events also lost their token type argument (`EntityTokensAddedEvent<Store, Token>` → `EntityTokensAddedEvent<Store>`); the rule only mentioned the namespace.
+- 4.80 → 4.90: `spec-attributes` matched any method with that name; it now needs the service as receiver.
+- 4.90 → 5.00: the sync-method rules listed a subset. They now cover every removed synchronous `ISettingService`, `IStoreService`, `IStoreContext`, `IStoreMappingService`, `ILanguageService` and `ILocalizationService` method.
+
+### Added — 12 rules for 4.90 → 5.00
+`migration-tablefor`, `sync-event-publisher`, `sync-repository`, `reset-checkout-data`, `masked-card-number`, `remote-post-sync`, `sync-geo-lookup`, `validator-await`, `html-formatter-members`, `linq-await-removed`, `linq-await-other`, `viewcomponent-view`.
+
+### Test results after the fixes
+- False alarms: 0 breaking findings on 5.00.1, 4.90.8 and 4.80.9 core plugins outside the plugins that now own the moved code (Forums, AzureBlob).
+- Detection on 4.90.8 core plugins: 192 breaking findings, including 16 `Create.TableFor` uses and 51 sync setting calls that 0.4.1 missed.
+- Of the 177 source files nopCommerce changed in its own plugins for 5.00, the rules flag 103 (0.4.1: 74).
+- Not tested: compiling and running generated code. That needs the .NET SDK with NuGet access.
+
 ## [0.4.1] — 2026-11-27
 
 Directory guideline pass.

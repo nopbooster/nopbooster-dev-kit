@@ -19,7 +19,7 @@ Work through every section; skip only what does not apply.
 
 **Install / uninstall symmetry**
 - Everything added on install is removed on uninstall: settings (`DeleteSettingAsync<T>`), locale resources (`DeleteLocaleResourcesAsync(prefix)`), widget activation, schedule tasks, custom permissions, generic attributes the plugin owns.
-- Tables created by `Installation` migrations are dropped by `Down()` (automatic with `AutoReversingMigration`).
+- Tables created by `Installation` migrations are dropped by `Down()`: explicitly with `this.DeleteTableIfExists<T>()` on 5.00, automatically with `AutoReversingMigration` on 4.70–4.90.
 - `base.InstallAsync()` / `base.UninstallAsync()` called.
 
 **Security**

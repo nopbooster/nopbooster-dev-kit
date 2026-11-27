@@ -39,7 +39,8 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
 - **Pattern:** `\bI?AclSupportedModelFactory\b`
-- **Fix:** IAclSupportedModelFactory/AclSupportedModelFactory were removed from Nop.Web.Framework.Factories.
+- **Already fixed if the file contains:** `using\s+Nop\.Web\.Areas\.Admin\.Factories\b`
+- **Fix:** IAclSupportedModelFactory/AclSupportedModelFactory left Nop.Web.Framework.Factories in 4.80. They now live in Nop.Web.Areas.Admin.Factories (the Nop.Web project), and the second overload is PrepareModelCustomerRolesAsync(model, entityName) instead of (model, entity, ignoreAclMappings).
 
 ### [BREAK] localized-enum
 
@@ -142,7 +143,7 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 ### [BREAK] spec-attributes
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
-- **Pattern:** `\bGetSpecificationAttributesAsync\s*\(`
+- **Pattern:** `[sS]pecificationAttributeService\s*\.\s*GetSpecificationAttributesAsync\s*\(`
 - **Fix:** ISpecificationAttributeService.GetSpecificationAttributesAsync was renamed GetAllSpecificationAttributesAsync in 4.90.
 
 ### [BREAK] attribute-value-picture
@@ -166,8 +167,8 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 ### [BREAK] token-events-namespace
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
-- **Pattern:** `\b(MessageTokensAddedEvent|EntityTokensAddedEvent)\b`
-- **Fix:** MessageTokensAddedEvent / EntityTokensAddedEvent moved from Nop.Core.Domain.Messages to Nop.Services.Messages in 4.90 — update the using.
+- **Pattern:** `\bMessageTokensAddedEvent\s*<|\bEntityTokensAddedEvent\s*<[^<>]*,`
+- **Fix:** In 4.90 MessageTokensAddedEvent and EntityTokensAddedEvent moved from Nop.Core.Domain.Messages to Nop.Services.Messages and lost the token type argument: MessageTokensAddedEvent<Token> is now MessageTokensAddedEvent, and EntityTokensAddedEvent<Store, Token> is now EntityTokensAddedEvent<Store>. Update the using, the IConsumer<> declarations and the HandleEventAsync signatures.
 
 ### [BREAK] pdf-sources
 
@@ -236,7 +237,7 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 - **Pattern:** `\bIUrlHelperFactory\b|\bIActionContextAccessor\b`
 - **Fix:** 4.90 core plugins build URLs with INopUrlHelper.RouteUrl(routeName) instead of IUrlHelperFactory + IActionContextAccessor.
 
-## 4.90 → 5.00 (25 rules)
+## 4.90 → 5.00 (37 rules)
 
 ### [BREAK] net9
 
@@ -309,14 +310,14 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 ### [BREAK] sync-localization
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
-- **Pattern:** `[lL]ocalizationService\s*\.\s*(AddOrUpdateLocaleResource|DeleteLocaleResources|DeleteLocaleStringResource|UpdateLocaleStringResource)\s*\(`
-- **Fix:** Synchronous ILocalizationService methods were removed in 5.00. Use the ...Async versions, or this.AddOrUpdateLocaleResource(dict) / this.DeleteLocaleResources(names) inside a migration.
+- **Pattern:** `[lL]ocalizationService\s*\.\s*(AddOrUpdateLocaleResource|DeleteLocaleResources|DeleteLocaleStringResource|UpdateLocaleStringResource|GetLocaleStringResourceByName)\s*\(|[lL]anguageService\s*\.\s*GetAllLanguages\s*\(`
+- **Fix:** Synchronous ILocalizationService methods were removed in 5.00. Use the ...Async versions, or this.AddOrUpdateLocaleResource(dict) / this.DeleteLocaleResources(names) inside a migration. The same applies to GetLocaleStringResourceByName and ILanguageService.GetAllLanguages: only the …Async versions remain.
 
 ### [BREAK] sync-settings
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
-- **Pattern:** `[sS]ettingService\s*\.\s*(InsertSetting|UpdateSetting|DeleteSetting|ClearCache)\s*\(`
-- **Fix:** Synchronous ISettingService methods were removed in 5.00. Use the ...Async versions, or this.SetSettingIfNotExists/GetSettingByKey/DeleteSettings inside a migration.
+- **Pattern:** `[sS]ettingService\s*\.\s*(InsertSetting|UpdateSetting|DeleteSetting|ClearCache|GetAllSettings|GetSetting|GetSettingById|GetSettingByKey|SetSetting|LoadSetting|SaveSetting|SettingExists)\s*(<[^>(]*>)?\s*\(`
+- **Fix:** Synchronous ISettingService methods were removed in 5.00. Use the ...Async versions, or this.SetSettingIfNotExists/GetSettingByKey/DeleteSettings inside a migration. This covers every synchronous ISettingService method, including LoadSetting, SaveSetting, SetSetting, GetSettingByKey, GetSetting, GetSettingById, GetAllSettings and SettingExists.
 
 ### [BREAK] sync-logger
 
@@ -327,8 +328,8 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 ### [BREAK] sync-store
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
-- **Pattern:** `[sS]toreService\s*\.\s*UpdateStore\s*\(`
-- **Fix:** IStoreService.UpdateStore was removed in 5.00. Use UpdateStoreAsync.
+- **Pattern:** `[sS]toreService\s*\.\s*(UpdateStore|GetAllStores)\s*\(|[sS]toreContext\s*\.\s*GetCurrentStore\s*\(|[sS]toreMappingService\s*\.\s*(GetStoresIdsWithAccess|Authorize)\s*(<[^>(]*>)?\s*\(`
+- **Fix:** The synchronous IStoreService.UpdateStore and GetAllStores, IStoreContext.GetCurrentStore, and IStoreMappingService.GetStoresIdsWithAccess and Authorize were removed in 5.00. Use the …Async versions.
 
 ### [BREAK] migration-language-data
 
@@ -360,6 +361,66 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 - **Pattern:** `\bGetSearchTermByKeywordAsync\s*\(`
 - **Fix:** ISearchTermService.GetSearchTermByKeywordAsync was removed in 5.00 (search terms are per customer: SearchTermHistoryItemsAsync, DeleteSearchTermsByKeywordAsync).
 
+### [BREAK] sync-event-publisher
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `[eE]ventPublisher\s*\.\s*(Publish|EntityInserted|EntityUpdated|EntityDeleted|ModelPrepared)\s*(<[^>(]*>)?\s*\(`
+- **Fix:** IEventPublisher.Publish and the synchronous EntityInserted/EntityUpdated/EntityDeleted/ModelPrepared extensions were removed in 5.00. Use PublishAsync, EntityInsertedAsync, EntityUpdatedAsync, EntityDeletedAsync and ModelPreparedAsync.
+
+### [BREAK] sync-repository
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `[rR]epository\s*\.\s*(Insert|Update|Delete|GetAll|GetById)\s*(<[^>(]*>)?\s*\(`
+- **Fix:** The synchronous IRepository<T> methods Insert, Update, Delete, GetAll and GetById were removed in 5.00. Use InsertAsync, UpdateAsync, DeleteAsync, GetAllAsync and GetByIdAsync. Ignore hits on repositories that are not nopCommerce's IRepository<T>.
+
+### [BREAK] migration-tablefor
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\bCreate\s*\.\s*TableFor\s*<`
+- **Fix:** Create.TableFor<T>() was removed in 5.00. Derive the schema migration from Migration (core no longer uses AutoReversingMigration), call this.CreateTableIfNotExists<T>() in Up() and this.DeleteTableIfExists<T>() in Down(). Both are in Nop.Data.Extensions.
+
+### [BREAK] reset-checkout-data
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `[cC]ustomerService\s*\.\s*ResetCheckoutDataAsync\s*\(`
+- **Fix:** ResetCheckoutDataAsync moved from ICustomerService to IShoppingCartService in 5.00, with the same parameters. Inject IShoppingCartService.
+
+### [BREAK] masked-card-number
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\bGetMaskedCreditCardNumber\s*\(`
+- **Fix:** IPaymentService.GetMaskedCreditCardNumber was removed in 5.00 and core has no replacement. Mask the number in the plugin.
+
+### [BREAK] remote-post-sync
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `[rR]emotePost\s*\.\s*Post\s*\(`
+- **Fix:** RemotePost.Post() became PostAsync() in 5.00. Await it.
+
+### [BREAK] sync-geo-lookup
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\.\s*(LookupCountryIsoCode|LookupCountryName)\s*\(`
+- **Fix:** IGeoLookupService.LookupCountryIsoCode and LookupCountryName were removed in 5.00. Use LookupCountryIsoCodeAsync and LookupCountryNameAsync.
+
+### [BREAK] validator-await
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\.\s*(MustAwait|WhenAwait)\s*\(`
+- **Fix:** The MustAwait and WhenAwait validator extensions were removed in 5.00. Use FluentValidation's MustAsync and WhenAsync, as core validators now do. WithMessageAwait is unchanged.
+
+### [BREAK] html-formatter-members
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `[hH]tmlFormatter\s*\.\s*(ConvertPlainTextToHtml|ReplaceAnchorTags)\s*\(`
+- **Fix:** ConvertPlainTextToHtml and ReplaceAnchorTags are no longer on IHtmlFormatter in 5.00. The interface keeps FormatText, StripTags and ConvertHtmlToPlainText.
+
+### [BREAK] linq-await-removed
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\.\s*(SingleOrDefaultAwaitAsync|SumAwaitAsync)\s*\(`
+- **Fix:** nopCommerce's own SingleOrDefaultAwaitAsync and SumAwaitAsync extensions were removed in 5.00. Rewrite with the operators that remain (see linq-await-other).
+
 ### [CHECK] return-request-tokens
 
 - **Search in:** `*.cs`, and Razor code in `*.cshtml`
@@ -384,6 +445,19 @@ The scan finds known patterns; the compiler finds the rest. Always build afterwa
 - **Search in:** `*.cs`, `*.cshtml`, `*.csproj`, `*.js`, `plugin.json`, `theme.json`
 - **Pattern:** `\bnew\s+Swiper\s*\(|\bswiper-(bundle|container)\b`
 - **Fix:** Swiper went from 11 to 14 in 5.00. Check slider options and markup against the Swiper 14 migration notes.
+
+### [CHECK] linq-await-other
+
+- **Search in:** `*.cs`, and Razor code in `*.cshtml`
+- **Pattern:** `\.\s*\w+Await(Async)?\s*[<(]`, then keep only operators that are **not** in this list: `AggregateAwaitAsync`, `AllAwaitAsync`, `AnyAwaitAsync`, `FirstOrDefaultAwaitAsync`, `GroupByAwait`, `OrderByDescendingAwait`, `SelectAwait`, `SelectManyAwait`, `ToDictionaryAwaitAsync`, `WhereAwait`, `WithMessageAwait`, and .NET's own `ConfigureAwait`
+- **Exact rule** (uses a look-ahead; for reference): `\.\s*(?!(?:AggregateAwaitAsync|AllAwaitAsync|AnyAwaitAsync|FirstOrDefaultAwaitAsync|GroupByAwait|OrderByDescendingAwait|SelectAwait|SelectManyAwait|ToDictionaryAwaitAsync|WhereAwait|WithMessageAwait|ConfigureAwait)\s*[<(])\w+Await(?:Async)?\s*[<(]`
+- **Fix:** Core stopped referencing the System.Linq.Async package in 5.00. The …Await operators in the list above are nopCommerce's own (Nop.Data, namespace System.Linq) and still work. Any other …Await operator came from that package: rewrite it, or add the package to the plugin, and let the build confirm.
+
+### [CHECK] viewcomponent-view
+
+- **Search in:** `*ViewComponent.cs`
+- **Pattern:** `\breturn\s+View\s*(<[^>(]*>)?\s*\(`
+- **Fix:** NopViewComponent's View(...) overloads were replaced by ViewAsync(...) in 5.00. A plain View(...) still compiles through ASP.NET Core, but only ViewAsync publishes the model-prepared event. Make the method InvokeAsync and return await ViewAsync(...).
 
 ### [CHECK] removed-public-views
 
