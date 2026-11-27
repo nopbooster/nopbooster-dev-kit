@@ -16,14 +16,14 @@ Every version-specific statement must be checkable against the nopCommerce sourc
 
 1. Compare the relevant files between release tags (e.g. `git diff release-4.80.9 release-4.90.8 -- src/Libraries/Nop.Services/Catalog/IProductService.cs`).
 2. Update the matching file:
-   - plugin rules → `skills/nopcommerce-plugin-development/references/`
-   - upgrade notes → `skills/nop-upgrade/references/`
-   - theme rules → `skills/nopcommerce-theme-development/SKILL.md`
+   - plugin rules → `skills/nop-plugin/references/`
+   - upgrade notes → `skills/nop-migrate/references/`
+   - theme rules → `skills/nop-theme/SKILL.md`
 3. Keep `SKILL.md` files short; put detail in `references/`.
 
 ## Adding an upgrade scan rule
 
-Add an entry to the matching version section of `skills/nop-upgrade/references/scan-rules.md`, in the same shape as the others: severity (`BREAK`, `CHECK`, `TIDY`) and a short id in the heading, the file types to search, a ripgrep-compatible pattern, an "already fixed" pattern if one applies, and a fix that says what to do instead. Check the pattern against real code with `rg` before submitting.
+Add an entry to the matching version section of `skills/nop-migrate/references/scan-rules.md`, in the same shape as the others: severity (`BREAK`, `CHECK`, `TIDY`) and a short id in the heading, the file types to search, a ripgrep-compatible pattern, an "already fixed" pattern if one applies, and a fix that says what to do instead. Check the pattern against real code with `rg` before submitting.
 
 ## Keep the plugin to allowed file types
 

@@ -22,7 +22,7 @@ jobs:
           python -m json.tool .claude-plugin/plugin.json > /dev/null
           python -m json.tool .claude-plugin/marketplace.json > /dev/null
 
-      - name: Every skill has a SKILL.md with name and description
+      - name: Every skill has a SKILL.md whose name matches its folder
         run: |
           set -e
           for d in skills/*/; do
@@ -30,6 +30,8 @@ jobs:
             test -f "$f" || { echo "missing $f"; exit 1; }
             head -5 "$f" | grep -q '^name:' || { echo "no name in $f"; exit 1; }
             grep -q '^description:' "$f" || { echo "no description in $f"; exit 1; }
+            n=$(basename "$d")
+            grep -qx "name: $n" "$f" || { echo "name in $f must be $n"; exit 1; }
           done
           echo "skills OK"
 

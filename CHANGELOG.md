@@ -2,16 +2,35 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
-## [0.3.1] — 2026-11-27
+## [0.4.0] — 2026-11-27
 
-Fixes for the Claude plugin directory review, and wording brought up to date.
+Shorter, clearer names, one skill fewer, and stricter guard rails. Nothing was published under the old names, so there is nothing to migrate.
 
-### Changed
+### Changed — names
+| Before | Now |
+|---|---|
+| `nopcommerce-plugin-development` + `nop-new-plugin` | `nop-plugin` |
+| `nopcommerce-theme-development` | `nop-theme` |
+| `nop-upgrade` | `nop-migrate` |
+| `nop-review` | `nop-audit` |
+| `nop-upgrade-engineer` (agent) | `nop-bulk-migrator` |
+
+- `nop-new-plugin` is merged into `nop-plugin`: its workflow is now `references/new-plugin.md`, read only when a plugin is created from scratch. `/nop-plugin Group.Name what it should do` scaffolds a plugin.
+- Plain requests ("upgrade my plugin to 5.00", "review my plugin") still trigger the right skill.
+
+### Added — guard rails
+- `nop-migrate` and `nop-bulk-migrator` check for version control and a clean working tree before editing, and never commit, push, reset or discard changes on their own.
+- `nop-plugin` never overwrites an existing plugin folder.
+- `nop-audit` is read-only unless fixes are asked for.
+- Every skill and the agent must say when a build, install or check could not be run, instead of reporting it as done.
+- CI checks that each skill's `name` matches its folder.
+
+### Changed — directory review and accuracy
 - `plugin.json` now names the listing icon with the `icon` field.
-- README banner and "How it works" illustrations redrawn for nopCommerce 5.00 (they still showed 4.90).
-- .NET 8 and .NET 9 support ended on 10 November 2026: the README and the upgrade and plugin skills now say so in the past tense.
+- README illustrations redrawn for nopCommerce 5.00 and the new names.
+- .NET 8 and .NET 9 support ended on 10 November 2026: the README and skills now say so in the past tense.
 - README: .NET badge includes 10, the knowledge table and install note corrected for 5.00.
-- Issue template offers 5.00.x.
+- Issue templates offer 5.00.x and the new skill names.
 
 ### Verified
 - nopCommerce `release-5.00.1` diffed against `release-5.00.0`: no change to any API, project file, view path or theme file the Dev Kit describes.

@@ -1,9 +1,9 @@
 ---
-name: nopcommerce-theme-development
-description: This skill should be used when creating, editing or upgrading a nopCommerce storefront theme — "nopCommerce theme", "nop theme", "override a view", "theme.json", "DefaultClean", "change the header/footer/product page layout", "RTL theme", "theme CSS". Targets nopCommerce 5.00 and knows the 4.70/4.80/4.90 differences.
+name: nop-theme
+description: This skill should be used when creating, editing or upgrading a nopCommerce storefront theme — "/nop-theme", "nopCommerce theme", "nop theme", "override a view", "theme.json", "DefaultClean", "change the header/footer/product page layout", "RTL theme", "theme CSS". Targets nopCommerce 5.00 and knows the 4.70/4.80/4.90 differences.
 ---
 
-# nopCommerce theme development (5.00 default)
+# nopCommerce themes (5.00 default)
 
 Checked against DefaultClean in 4.70.5, 4.80.9, 4.90.8 and 5.00.0 (unchanged in 5.00.1).
 
@@ -71,4 +71,4 @@ Start a new theme by copying `Themes/DefaultClean` and renaming folder + `System
 | `_ProductReviewHelpfulness` moved from `Views/Product` to `Views/Shared`; vendor review views added | 4.80 | Move overrides to the new path. |
 | Font Awesome 5 → 6 (4.80) → 7 (4.90) | admin only | Only matters for admin views in plugins. |
 
-For a full theme upgrade follow the `nop-upgrade` skill, theme section.
+For a full theme upgrade follow the `nop-migrate` skill, theme section.

@@ -19,7 +19,7 @@
 
 Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugin and it often targets the wrong .NET version, uses APIs that were removed two releases ago, or forgets the files nopCommerce needs to load a plugin at all.
 
-**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge, plus commands to scaffold plugins, upgrade old code and review work before release. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9, 4.90.8 and 5.00.0**, and re-checked against **5.00.1**.
+**The NopBooster Dev Kit fixes that.** It is a Claude plugin that gives Claude accurate, version-specific nopCommerce knowledge: four skills to build plugins and themes, upgrade old code and audit work before release, plus an agent for bulk upgrades. Every version fact in it was checked against the real nopCommerce source code of **4.70.5, 4.80.9, 4.90.8 and 5.00.0**, and re-checked against **5.00.1**.
 
 ## Contents
 
@@ -29,7 +29,7 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 - [Quick start](#quick-start)
 - [Build a new plugin](#build-a-new-plugin)
 - [Upgrade 4.70 / 4.80 / 4.90 → 5.00](#upgrade-470--480--490--500)
-- [Review before release](#review-before-release)
+- [Audit before release](#audit-before-release)
 - [Themes](#themes)
 - [Version coverage](#version-coverage)
 - [How the knowledge was verified](#how-the-knowledge-was-verified)
@@ -42,17 +42,16 @@ Claude knows ASP.NET Core well, but nopCommerce only roughly. Ask it for a plugi
 
 | | Name | What it does |
 |---|---|---|
-| 🧠 | **nopcommerce-plugin-development** | Loads automatically whenever you work on plugin code. Project setup, `plugin.json`, install/uninstall, admin pages and menus, permissions, settings, migrations, events, widgets, scheduled tasks — for 5.00, with the 4.70/4.80/4.90 differences. |
-| 🎨 | **nopcommerce-theme-development** | Loads automatically for storefront themes: `theme.json`, view overrides, CSS, RTL, and what changed between versions. |
-| ⚡ | **`/nop-new-plugin`** | Scaffolds a complete, buildable plugin from one sentence. |
-| 🔁 | **`/nop-upgrade`** | Upgrades a plugin or theme one version at a time, guided by a scan that lists breaking code by file and line. |
-| 🔍 | **`/nop-review`** | Reviews a plugin or theme for bugs, security, conventions and future upgrade cost. |
-| 🤖 | **nop-upgrade-engineer** (agent) | Works through many plugins or a whole theme, one at a time, until each builds. |
+| 🧩 | **`nop-plugin`** | Builds and edits plugins. Loads on its own whenever you work on plugin code, and `/nop-plugin` scaffolds a complete, buildable plugin from one sentence. Project setup, `plugin.json`, install/uninstall, admin pages and menus, permissions, settings, migrations, events, widgets, scheduled tasks — for 5.00, with the 4.70/4.80/4.90 differences. |
+| 🎨 | **`nop-theme`** | Builds and edits storefront themes. Loads on its own for theme work: `theme.json`, view overrides, CSS, RTL, and what changed between versions. |
+| 🔁 | **`nop-migrate`** | Upgrades a plugin or theme one version at a time, guided by a scan that lists breaking code by file and line. |
+| 🔍 | **`nop-audit`** | Audits a plugin or theme before release: bugs, security, conventions and future upgrade cost. |
+| 🤖 | **`nop-bulk-migrator`** (agent) | Runs `nop-migrate` across many plugins or a whole theme, one at a time, until each builds. |
 
 ## How it works
 
 <p align="center">
-  <img src="docs/images/how-it-works.png" alt="You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or a review with fixes" width="100%">
+  <img src="docs/images/how-it-works.png" alt="You ask in plain English or with a slash command; Claude uses the Dev Kit skills; you get a buildable plugin, upgraded code with a report, or an audit with fixes" width="100%">
 </p>
 
 You talk to Claude normally. When the conversation is about nopCommerce, Claude loads the right part of the Dev Kit on its own — only the reference it needs, so it stays fast. Slash commands are there when you want a specific workflow.
@@ -94,15 +93,15 @@ Without a nopCommerce source tree Claude can still write the code; it just can't
 Open Claude Code in the root of your nopCommerce source (the folder that contains `src/NopCommerce.sln`) and try one of these:
 
 ```text
-/nop-new-plugin Widgets.ProductBadges show "New" and "Sale" badges on product pages, configurable per store
+/nop-plugin Widgets.ProductBadges show "New" and "Sale" badges on product pages, configurable per store
 ```
 
 ```text
-/nop-upgrade src/Plugins/Nop.Plugin.Misc.MyErpSync
+/nop-migrate src/Plugins/Nop.Plugin.Misc.MyErpSync
 ```
 
 ```text
-/nop-review src/Plugins/Nop.Plugin.Payments.MyGateway
+/nop-audit src/Plugins/Nop.Plugin.Payments.MyGateway
 ```
 
 Or just ask in your own words:
@@ -118,7 +117,7 @@ Or just ask in your own words:
   <img src="docs/images/new-plugin-flow.png" alt="Five steps: describe it, inputs settled, files generated, built, install" width="100%">
 </p>
 
-`/nop-new-plugin` turns one sentence into a complete project, not a skeleton with TODOs.
+`/nop-plugin` turns one sentence into a complete project, not a skeleton with TODOs.
 
 **1. Describe it.** For example: *"a widget that shows a delivery-time message on the product page, with the text editable per store."*
 
@@ -161,7 +160,7 @@ Everything the plugin adds on install (settings, locale strings, widget activati
   <img src="docs/images/upgrade-path.png" alt="Upgrade path 4.70 to 4.80 to 4.90 to 5.00 with the main breaking changes of each hop" width="100%">
 </p>
 
-Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
+Upgrades go **one version at a time**. For each hop, `/nop-migrate`:
 
 1. **Scans** the code for known breaking changes.
 2. **Fixes** them the way nopCommerce's own plugins were changed, without renaming settings, locale keys, tables or URLs, so existing stores keep their data.
@@ -174,7 +173,7 @@ Upgrades go **one version at a time**. For each hop, `/nop-upgrade`:
   <img src="docs/images/upgrade-scan-report.png" alt="Upgrade scan report for a sample 4.70 plugin: 8 breaking, 2 check and 4 tidy findings with file and line" width="100%">
 </p>
 
-`/nop-upgrade` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-upgrade/references/scan-rules.md): 61 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
+`/nop-migrate` starts with a scan. Claude works through the rules in [`scan-rules.md`](skills/nop-migrate/references/scan-rules.md): 61 known breaking patterns, each with a search pattern, the file types to search and the fix. It detects your current version from `plugin.json` (or the `.csproj` target framework) and reports every hit by file and line:
 
 | Severity | Meaning |
 |---|---|
@@ -190,17 +189,17 @@ What it knows about:
 | **4.80 → 4.90** | Product reviews → `IProductReviewService` · warehouses → `IWarehouseService` · shipping methods → `IShippingMethodsService` · payment custom values and `OrderPaymentInfo` session reworked · `IPlugin.InstallSampleDataAsync` · specification / product attribute / newsletter / topic API changes · token events moved namespace · PDF documents rewritten · Azure Blob moved to a plugin · menu settings removed · `TopMenu` → `MainMenu` |
 | **4.90 → 5.00** | net9.0 → net10.0 · AutoMapper → Mapster (`BaseMapperProfile`) · FluentValidation 12, `FluentValidation.AspNetCore` and `IsCreditCard()` removed · forums, news and polls moved out of core into plugins (domain, services, message tokens, widget zones, views) · `IWebHelper` → `Nop.Services.Helpers`, `IThemeContext` → `Nop.Services.Themes` · synchronous localization, setting, logger and store methods removed · migration helpers (`this.AddOrUpdateLocaleResource`, no `GetLanguageData`) · `UrlHelperExtensions` removed · `FormatBasePriceAsync`, return-request tokens, `GetListOfAllowedTokensAsync` signatures · Swiper 11 → 14 |
 
-The full lists, with before/after code, are in [`skills/nop-upgrade/references`](skills/nop-upgrade/references).
+The full lists, with before/after code, are in [`skills/nop-migrate/references`](skills/nop-migrate/references).
 
 > The scan finds known patterns; the compiler finds the rest. Always build afterwards — the upgrade skill does.
 
 ### Many plugins at once
 
-Ask for the upgrade engineer, e.g. *"Use the nop-upgrade-engineer to upgrade everything in src/Plugins/Custom to 5.00."* It scans everything first, then upgrades and builds each plugin in turn and returns a status table.
+Ask for the bulk migrator, e.g. *"Use the nop-bulk-migrator to upgrade everything in src/Plugins/Custom to 5.00."* It scans everything first, then upgrades and builds each plugin in turn and returns a status table.
 
-## Review before release
+## Audit before release
 
-`/nop-review` checks a plugin or theme against a release checklist and leads with a verdict — *ship*, *ship after fixes*, or *not ready* — followed by findings with file and line:
+`/nop-audit` checks a plugin or theme against a release checklist and leads with a verdict — *ship*, *ship after fixes*, or *not ready* — followed by findings with file and line:
 
 - **Packaging** — `plugin.json`, `.csproj`, content files, no edits to core.
 - **Install / uninstall symmetry** — nothing left behind.
@@ -211,7 +210,7 @@ Ask for the upgrade engineer, e.g. *"Use the nop-upgrade-engineer to upgrade eve
 
 ## Themes
 
-The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 176 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-upgrade` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
+The theme skill covers `theme.json`, how view overrides work, registering CSS, RTL, scripts, and selling themes. It also knows what breaks themes between versions — most importantly in 4.90, where the header **TopMenu** was replaced by **MainMenu** and **FooterMenu** and 176 public views changed, and in 5.00, where the forum, news and poll views moved into plugins. `/nop-migrate` has a dedicated theme procedure that re-merges your overridden views onto the new core views instead of keeping stale copies.
 
 ## Version coverage
 
@@ -243,13 +242,12 @@ nopbooster-dev-kit/
 │   ├── marketplace.json       lets this repo be added as a marketplace
 │   └── icon.png               directory listing icon
 ├── skills/
-│   ├── nopcommerce-plugin-development/   auto-loaded knowledge + references/
-│   ├── nopcommerce-theme-development/    auto-loaded knowledge
-│   ├── nop-new-plugin/                   /nop-new-plugin
-│   ├── nop-upgrade/                      /nop-upgrade + references/ (incl. scan-rules.md)
-│   └── nop-review/                       /nop-review
+│   ├── nop-plugin/            build, edit and scaffold plugins + references/
+│   ├── nop-theme/             build and edit themes
+│   ├── nop-migrate/           version upgrades + references/ (incl. scan-rules.md)
+│   └── nop-audit/             pre-release audit
 ├── agents/
-│   └── nop-upgrade-engineer.md
+│   └── nop-bulk-migrator.md   bulk upgrades
 └── docs/                      README illustrations
 ```
 

@@ -1,12 +1,6 @@
----
-name: nop-new-plugin
-description: This skill should be used when the user asks to create, scaffold, start or generate a new nopCommerce plugin — "/nop-new-plugin", "new nop plugin", "scaffold a widget plugin", "create a payment plugin for nopCommerce", "make me a plugin that shows X on the product page". Produces a complete, buildable plugin project for nopCommerce 5.00 (or 4.90/4.80/4.70 on request).
-argument-hint: "[Group.Name] [what it should do]"
----
+# Create a new nopCommerce plugin
 
-# Scaffold a new nopCommerce plugin
-
-Produce a complete, buildable plugin — not a skeleton with TODOs.
+The workflow for a plugin that does not exist yet. Produce a complete, buildable plugin — not a skeleton with TODOs.
 
 ## 1. Settle the inputs
 
@@ -23,14 +17,16 @@ Get these from the request; ask only for what is missing and cannot be defaulted
 
 SystemName = `{Group}.{Name}`, project = `Nop.Plugin.{Group}.{Name}`.
 
+If a folder or project with that name already exists, stop and ask whether to extend it or pick another name. Never overwrite an existing plugin.
+
 ## 2. Load the rules
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/nopcommerce-plugin-development/SKILL.md`, then only the references the plugin needs:
+The conventions in this skill's `SKILL.md` apply to everything you generate. From this folder, read only the references the plugin needs:
 
-- always: `references/project-setup.md`
-- configuration page or admin menu: `references/admin-ui.md`
-- permissions beyond the standard ones: `references/permissions.md`
-- tables, events, widgets, services, scheduled tasks: `references/data-events-widgets.md`
+- always: `project-setup.md`
+- configuration page or admin menu: `admin-ui.md`
+- permissions beyond the standard ones: `permissions.md`
+- tables, events, widgets, services, scheduled tasks: `data-events-widgets.md`
 
 If the nopCommerce source for the target version is available locally, open the closest core plugin (`src/Plugins/Nop.Plugin.Widgets.GoogleAnalytics` for widgets, `Nop.Plugin.Misc.Zettle` for tables/menu/tasks, `Nop.Plugin.Pickup.PickupInStore` for entity builders) and match its patterns exactly.
 
@@ -55,4 +51,4 @@ If no solution is present, say the project must be placed in `src/Plugins/` of a
 
 ## 5. Report
 
-Reply briefly: what was created, the build result, and how to install it (restart → Admin → Configuration → Local plugins → Reload list → Install → restart if prompted → Configure). Do not paste whole files into chat.
+Reply briefly: what was created, the build result (or, if the build could not be run, that it was not built and why), and how to install it (restart → Admin → Configuration → Local plugins → Reload list → Install → restart if prompted → Configure). Do not paste whole files into chat.

@@ -1,11 +1,16 @@
 ---
-name: nopcommerce-plugin-development
-description: This skill should be used when writing, editing or explaining nopCommerce plugin code (C#, Razor, plugin.json, .csproj) — "nopCommerce plugin", "nop plugin", "widget plugin", "payment plugin", "shipping plugin", "admin page for my plugin", "plugin settings", "plugin migration", "event consumer", "IWidgetPlugin", "BasePlugin", "INopStartup", "IRouteProvider". Targets nopCommerce 5.00 by default and knows how 4.70, 4.80 and 4.90 differ.
+name: nop-plugin
+description: This skill should be used when creating, writing, editing or explaining nopCommerce plugin code (C#, Razor, plugin.json, .csproj) — "/nop-plugin", "new nopCommerce plugin", "scaffold a widget plugin", "create a payment plugin for nopCommerce", "make me a plugin that shows X on the product page", "nop plugin", "shipping plugin", "admin page for my plugin", "plugin settings", "plugin migration", "event consumer", "IWidgetPlugin", "BasePlugin", "INopStartup", "IRouteProvider". Scaffolds complete, buildable plugins and applies version-correct conventions. Targets nopCommerce 5.00 by default and knows how 4.70, 4.80 and 4.90 differ.
+argument-hint: "[Group.Name] [what the new plugin should do]"
 ---
 
-# nopCommerce plugin development (5.00 default)
+# nopCommerce plugins (5.00 default)
 
 Apply these rules whenever producing or changing nopCommerce plugin code. They were checked against the nopCommerce source of releases 4.70.5, 4.80.9, 4.90.8 and 5.00.0; 5.00.1 changes nothing described here.
+
+## Creating a new plugin
+
+When the user asks for a plugin that does not exist yet, or runs `/nop-plugin` with a name or a description, read `references/new-plugin.md` and follow it from start to finish. For every other task (editing, fixing, explaining), use the sections below.
 
 ## 1. Establish the target version first
 
@@ -25,7 +30,7 @@ Apply these rules whenever producing or changing nopCommerce plugin code. They w
 
 Minor releases (e.g. 4.90.0–4.90.8) are binary compatible: a plugin built for 4.90 works on every 4.90.x.
 
-5.00 specifics when writing new code: derive mapping profiles from `BaseMapperProfile`; `using Nop.Services.Helpers;` for `IWebHelper` and `using Nop.Services.Themes;` for `IThemeContext`; only async service methods exist; forums, news and polls are plugins now (`Nop.Plugin.Misc.Forums/News/Polls`), not core; in migrations use `this.AddOrUpdateLocaleResource(dict)`. Details: the `nop-upgrade` skill's `references/490-to-500.md`.
+5.00 specifics when writing new code: derive mapping profiles from `BaseMapperProfile`; `using Nop.Services.Helpers;` for `IWebHelper` and `using Nop.Services.Themes;` for `IThemeContext`; only async service methods exist; forums, news and polls are plugins now (`Nop.Plugin.Misc.Forums/News/Polls`), not core; in migrations use `this.AddOrUpdateLocaleResource(dict)`. Details: the `nop-migrate` skill's `references/490-to-500.md`.
 
 ## 2. Non-negotiable conventions
 
@@ -64,6 +69,7 @@ Nop.Plugin.{Group}.{Name}/
 
 Read only the reference that matches the task:
 
+- `references/new-plugin.md` — the workflow for creating a plugin from scratch.
 - `references/project-setup.md` — exact `.csproj` and `plugin.json` for 5.00 (and the 4.70–4.90 differences), the plugin class, install/uninstall/update.
 - `references/admin-ui.md` — configuration page, controller, routes, admin menu items, multi-store settings.
 - `references/permissions.md` — `[CheckPermission]`, `StandardPermission` constants, adding custom permissions.
@@ -76,3 +82,8 @@ Read only the reference that matches the task:
 3. Every view and `logo.png` is marked `CopyToOutputDirectory` in the `.csproj`.
 4. Install → configure → uninstall → reinstall leaves no orphaned settings, locale resources or tables.
 5. Tell the user to restart the application after copying a new build, and to use **Admin → Configuration → Local plugins → Reload list of plugins** after adding a new one.
+
+## 6. When you are not sure
+
+- If a version detail is not covered here or in the references, check the nopCommerce source of the target version when it is available. If it is not available, say that the detail is unverified instead of guessing.
+- Never report a build, an install or a test as successful unless you ran it and saw it succeed.

@@ -1,12 +1,12 @@
 ---
-name: nop-review
-description: This skill should be used when reviewing nopCommerce plugin or theme code for correctness, conventions, security and upgrade-safety — "/nop-review", "review my nopCommerce plugin", "is this nop plugin OK", "check this plugin before I sell it", "audit this nopCommerce customisation".
+name: nop-audit
+description: This skill should be used when reviewing nopCommerce plugin or theme code for correctness, conventions, security and upgrade-safety — "/nop-audit", "review my nopCommerce plugin", "is this nop plugin OK", "check this plugin before I sell it", "audit this nopCommerce customisation".
 argument-hint: "[path to plugin, theme or diff]"
 ---
 
-# Review nopCommerce plugin or theme code
+# Audit nopCommerce plugin or theme code before release
 
-Review against nopCommerce conventions for the plugin's target version (from `plugin.json`). Load `${CLAUDE_PLUGIN_ROOT}/skills/nopcommerce-plugin-development/SKILL.md` first; open its references only for areas where you find problems.
+Review against nopCommerce conventions for the plugin's target version (from `plugin.json`). Load `${CLAUDE_PLUGIN_ROOT}/skills/nop-plugin/SKILL.md` first; open its references only for areas where you find problems.
 
 ## Checklist
 
@@ -44,9 +44,11 @@ Work through every section; skip only what does not apply.
 - Widget views keep working when `additionalData` is null.
 
 **Upgrade safety**
-- When the code targets 4.70/4.80/4.90, run the scan in `${CLAUDE_PLUGIN_ROOT}/skills/nop-upgrade/references/scan-rules.md` from the current version to 5.00 and report what a future upgrade will cost.
+- When the code targets 4.70/4.80/4.90, run the scan in `${CLAUDE_PLUGIN_ROOT}/skills/nop-migrate/references/scan-rules.md` from the current version to 5.00 and report what a future upgrade will cost.
 - Theme: count overridden core views; flag overrides that could be replaced by CSS or a widget zone.
 
 ## Output
+
+This is a read-only review: do not change any code unless the user asks for the fixes to be applied. Report only what you checked in the code, and list anything you could not check (for example runtime behaviour without a running store) as not checked.
 
 Lead with a one-line verdict (ship / ship after fixes / not ready). Then findings grouped **Must fix** (bugs, security, data loss), **Should fix** (conventions, performance, upgrade cost), **Nice to have**, each with `file:line`, the problem, and the concrete fix (code when short). Do not restate code that is fine.

@@ -1,6 +1,6 @@
 ---
-name: nop-upgrade
-description: This skill should be used when upgrading or migrating nopCommerce plugins, themes or customised code between versions — "/nop-upgrade", "upgrade my plugin to 5.00", "migrate from 4.70 to 4.80", "port this plugin to nopCommerce 4.90", "move to .NET 10", "what breaks when upgrading nopCommerce", "upgrade check", "my plugin doesn't compile after upgrading". Covers 4.70 → 4.80 → 4.90 → 5.00.
+name: nop-migrate
+description: This skill should be used when upgrading or migrating nopCommerce plugins, themes or customised code between versions — "/nop-migrate", "upgrade my plugin to 5.00", "migrate from 4.70 to 4.80", "port this plugin to nopCommerce 4.90", "move to .NET 10", "what breaks when upgrading nopCommerce", "upgrade check", "my plugin doesn't compile after upgrading". Covers 4.70 → 4.80 → 4.90 → 5.00.
 argument-hint: "[path to plugin or theme] [target version, default 5.00]"
 ---
 
@@ -14,6 +14,7 @@ Why now: Microsoft ended support for .NET 8 and .NET 9 on 10 November 2026, so 4
 
 - Current: `SupportedVersions` in each `plugin.json`, or `<TargetFramework>` (net8.0 = 4.70, net9.0 = 4.80 or 4.90, net10.0 = 5.00).
 - Target: 5.00 unless the user says otherwise (or their store cannot move to .NET 10 yet — then 4.90).
+- Starting point: check that the code is under version control with a clean working tree (`git status`). If it is not, tell the user and ask before editing, so the upgrade can be reviewed and undone as one change. Do not commit, push, reset or discard changes unless the user asks.
 - Store database upgrades are separate from code upgrades: nopCommerce upgrades the database on first start of the new version (back up first; for very old stores the release's UpgradeScripts package applies). Say this once if the user is upgrading a live store.
 
 ## 2. Scan
@@ -45,8 +46,10 @@ Rules while fixing:
 2. Re-run the scan from `references/scan-rules.md`: no BREAK items left.
 3. Runtime check on a copy of the store: install/upgrade the plugin, open its configuration page as admin **and** as a restricted admin role, use its admin menu entry, and exercise its storefront feature. For payment/shipping/tax plugins place a test order end to end.
 
+If any of these checks could not be run (no SDK, no target-version source tree, no test store), say which one, and do not describe the upgrade as verified.
+
 ## 5. Report
 
 Summarise: version hop(s) done, files changed, any behaviour the store owner must act on (e.g. re-assign custom role permissions after 4.70 → 4.80, re-create header links as Menus after 4.90, install the Forums/News/Polls plugins after 5.00 if the store used them, move the server to .NET 10), and anything that could not be verified.
 
-If many plugins or a whole theme need upgrading, use the `nop-upgrade-engineer` agent to work through them one at a time.
+If many plugins or a whole theme need upgrading, use the `nop-bulk-migrator` agent to work through them one at a time.
