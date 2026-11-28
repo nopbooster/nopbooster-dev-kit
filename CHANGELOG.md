@@ -2,6 +2,11 @@
 
 All notable changes to the NopBooster Dev Kit. Versions follow [semantic versioning](https://semver.org).
 
+## [0.5.1] — 2026-11-28
+
+### Fixed
+- `docs/images/banner.png` re-saved with different PNG compression. The directory scan read a run of compressed bytes in the old file as the text `IEX|` and flagged it as a download-and-run command. The image is pixel-for-pixel identical, and no file in the plugin now contains text that matches a download-and-run pattern.
+
 ## [0.5.0] — 2026-11-27
 
 Accuracy release. The kit was tested against nopCommerce's own plugins in 4.70.5, 4.80.9, 4.90.8 and 5.00.1, and the errors and gaps that testing found are fixed. Scan rules: 61 → 73.
