@@ -5,7 +5,7 @@ All notable changes to the NopBooster Dev Kit. Versions follow [semantic version
 ## [0.5.1] — 2026-11-28
 
 ### Fixed
-- `docs/images/banner.png` re-saved with different PNG compression. The directory scan read a run of compressed bytes in the old file as the text `IEX|` and flagged it as a download-and-run command. The image is pixel-for-pixel identical, and no file in the plugin now contains text that matches a download-and-run pattern.
+- The README banner illustration was saved again with different compression, to clear a false match in the directory's automatic check. The picture itself is unchanged.
 
 ## [0.5.0] — 2026-11-27
 
